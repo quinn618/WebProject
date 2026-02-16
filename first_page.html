@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghassra core &#x2728;</title>
+    <link rel="stylesheet" href="page_css.css">
+</head>
+
+<body>
+
+        <nav class="navbar">
+            
+                <div class="logo">
+                    🎓UniLife
+                </div>
+
+                <div class="nav-auth">
+                    <a href="#" class="login-btn">Log in</a>
+                    <a href="#" class="signup-btn">Sign up</a>
+                </div>
+
+        </nav>
+
+        <header class="hero">
+            
+            <div class="hero-content">
+                <h1>Manage your <span class="highlight">university life</span> with ease.</h1>
+                <p>Keep calm we got you, we have all you need here...</p>
+                
+            </div>
+            
+        </header>
+        <aside>
+            <div class="image-container">
+                <div id="fast-slideshow" class="fast-slider">
+                    <img src="1.jpg" class="slide active">
+                    <img src="2.jpg" class="slide">
+                    <img src="3.jpg" class="slide">
+                    <img src="4.jpg" class="slide">
+                    <img src="5.jpg" class="slide">
+                    <img src="6.jpg" class="slide">
+                </div>  
+            </div>
+        </aside>
+
+        <button class="cta-button">Get Started →</button>
+
+        <section class="documents-section">
+            <div class="docs-container">
+                <div class="docs-header">
+                    <span class="docs-icon">📄</span>
+                    <h2>Documents & Helpful Notes</h2>
+                </div>
+                <p class="docs-subtitle">Find documents and helpful notes shared by other students <b>for free</b>, tailored to your specific major.</p>
+                
+                <div class="major-grid">
+                    <div class="major-card">
+                        <div class="major-title"><span>&lt;/&gt;</span> Computer Science</div>
+                        <p>Algorithms, Data Structures, Web Dev resources...</p>
+                    </div>
+                    <div class="major-card">
+                        <div class="major-title">⚙️ IoT</div>
+                        <p>Sensors, Networks, and Smart Device protocols...</p>
+                    </div>
+                    <div class="major-card">
+                        <div class="major-title">💾 Embedded Systems</div>
+                        <p>Microcontrollers, RTOS, and Hardware programming...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2026 UniLife. From students to students.</p>
+        </footer>
+        <script>
+                        const slides = document.querySelectorAll('.slide');
+                        let currentIndex = 0;
+
+                        function rotateImages() {
+                            // 1. Retire la classe 'active' de l'image actuelle
+                            slides[currentIndex].classList.remove('active');
+                            
+                            // 2. Passe à l'image suivante (et revient à 0 à la fin)
+                            currentIndex = (currentIndex + 1) % slides.length;
+                            
+                            // 3. Ajoute la classe 'active' à la nouvelle image
+                            slides[currentIndex].classList.add('active')    ;
+                        }
+
+                        // Lance la rotation toutes les 400ms (0.4s)
+                        setInterval(rotateImages, 4000);
+        </script>
+</body>
+</html>

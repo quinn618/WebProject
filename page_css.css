@@ -1,0 +1,195 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-image:url("back.jpg");
+    background-size: cover;
+    color:#48293d ;
+    line-height: 1.6;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5%;
+    background: rgba(209, 245, 234, 0.6);;
+    position: sticky;
+    top: 0;
+    z-index: 9999
+}
+
+.logo {
+    font-weight: 800;
+    font-size: 1.5rem;
+    color:#7d45c6;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-auth .login-btn {
+    text-decoration: none;
+    color: var(--text-dark);
+    margin-right: 20px;
+    font-weight: 600;
+}
+
+.signup-btn {
+    background:#4f1176;
+    color: white;
+    padding: 10px 25px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 60px 5%;
+   
+} 
+
+.hero h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.hero p {
+    color: #48293d;
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+}
+/*images*/
+.image-container{
+    background: rgba(209, 245, 234, 0.6);
+    padding: 5px;           /* Largeur de la bordure */
+    border-radius: 25px;     /* Arrondi prononcé comme sur ton image */
+    box-shadow: 0 10px 30px rgba(47, 49, 49, 0.15); /* Ombre douce */
+    width: 90%;
+    max-width: 97%;        /* Largeur max de l'image */
+    margin-top: -20px;       /* Pour rapprocher l'image du bouton */
+    z-index: 1;
+    margin-left: auto;
+    margin-right: auto;
+}
+.fast-slider {
+    position: relative;
+    width: 99%;
+    height: 800px; /* Ajuste selon tes besoins */
+    overflow: hidden;
+    border-radius: 20px;
+    background: #eee;
+ 
+}
+
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0; /* Caché par défaut */
+    transition: opacity 0.1s ease-in-out; /* Transition très courte pour l'effet rapide */
+}
+
+.slide.active {
+    opacity: 1; /* Visible quand actif */
+}
+.highlight {
+    color:#7d45c6;
+}
+
+
+
+.cta-button {
+    background:#4f1176;
+    color: white;
+    border: none;
+    padding: 35px 35px;
+    border-radius: 50px;
+    font-size: 1.4rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 70px;
+    margin-bottom: 70px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 250px;
+    height: 80px;
+}
+
+
+
+
+/* Documents Section */
+.documents-section {
+    padding: 60px 5%;
+}
+
+.docs-container {
+    background: rgba(209, 245, 234, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    padding: 50px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.docs-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.docs-header h2 {
+    font-size: 2rem;
+}
+
+.docs-subtitle {
+    color:#48293d;
+    margin-bottom: 40px;
+    max-width: 600px;
+}
+
+.major-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.major-card {
+    background:#E2cef3;
+    padding: 25px;
+    border-radius: 15px;
+}
+
+.major-title {
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 40px;
+    color: gray;
+    font-size: 0.9rem;
+}
