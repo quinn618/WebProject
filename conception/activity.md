@@ -1,15 +1,31 @@
+```mermaid
 flowchart TD
 
-Start --> LoginCheck{User logged in?}
+Start --> OpenSite[Open Ghassra Platform]
 
-LoginCheck -- No --> Login
-LoginCheck -- Yes --> SelectDoc[Select Document]
+OpenSite --> Logged{User logged in?}
 
-SelectDoc --> FreeCheck{Is document free?}
+Logged -- No --> LoginPage[Go to Login / Register]
+LoginPage --> Auth{Credentials valid?}
 
-FreeCheck -- Yes --> Download
-FreeCheck -- No --> Purchase[Process Purchase]
+Auth -- No --> LoginPage
+Auth -- Yes --> Dashboard
 
-Purchase --> Download
+Logged -- Yes --> Dashboard[Access Dashboard]
+
+Dashboard --> Browse[Browse Filieres & Subjects]
+Browse --> SelectDoc[Select Document]
+
+SelectDoc --> Free{Document free?}
+
+Free -- Yes --> Download[Download Document]
+Free -- No --> Buy[Purchase Document]
+Buy --> Download
+
+Dashboard --> UploadChoice{Upload document?}
+UploadChoice -- Yes --> Upload[Upload File]
+UploadChoice -- No --> End
 
 Download --> End
+Upload --> End
+```
