@@ -1,14 +1,24 @@
-#sequenceDiagram
+```mermaid
+sequenceDiagram
 
-participant User
+actor User
 participant Browser
 participant Server
 participant Database
 
-User->>Browser: Enter email, password, code
-Browser->>Server: Send login request
-Server->>Database: Check user credentials
+User->>Browser: Enter email, password, institute code
+Browser->>Server: POST /login.php
+
+Server->>Database: Query user by email
 Database-->>Server: User data
 
-Server-->>Browser: Login success / failure
-Browser-->>User: Redirect to dashboard
+alt Credentials valid
+    Server->>Server: Verify password
+    Server->>Server: Verify institute code
+    Server->>Browser: Start session + redirect dashboard
+    Browser-->>User: Login success
+else Credentials invalid
+    Server-->>Browser: Error message
+    Browser-->>User: Show error
+end
+```
