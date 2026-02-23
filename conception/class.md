@@ -1,49 +1,74 @@
-# Class Diagram — Ghassra
-
 ```mermaid
 classDiagram
 
 class User {
-  id
-  name
-  email
-  password
-  institute_code
-  role
+  +int id
+  +string name
+  +string email
+  +string password
+  +string institute_code
+  +string role
+  +register()
+  +login()
+  +logout()
+  +updateProfile()
+  +uploadDocument()
+  +downloadDocument()
+  +purchaseDocument()
 }
 
 class Filiere {
-  id
-  name
+  +int id
+  +string name
+  +getSubjects()
+  +addSubject()
 }
 
 class Subject {
-  id
-  name
-  filiere_id
+  +int id
+  +string name
+  +int filiere_id
+  +getDocuments()
+  +addDocument()
 }
 
 class Document {
-  id
-  title
-  description
-  file_path
-  price
-  user_id
-  subject_id
-  status
+  +int id
+  +string title
+  +string description
+  +string file_path
+  +float price
+  +int user_id
+  +int subject_id
+  +string status
+  +upload()
+  +validate()
+  +remove()
+  +isFree()
+  +getDetails()
 }
 
 class Purchase {
-  id
-  user_id
-  document_id
-  date
+  +int id
+  +int user_id
+  +int document_id
+  +datetime date
+  +float amount
+  +createPurchase()
+  +getPurchaseHistory()
 }
 
-Filiere "1" --> "many" Subject
-Subject "1" --> "many" Document
-User "1" --> "many" Document
-User "1" --> "many" Purchase
-Document "1" --> "many" Purchase
+class Authentication {
+  +validateCredentials()
+  +createSession()
+  +destroySession()
+  +checkSession()
+}
+
+Filiere "1" --> "*" Subject : contains
+Subject "1" --> "*" Document : has
+User "1" --> "*" Document : uploads
+User "1" --> "*" Purchase : makes
+Document "1" --> "*" Purchase : purchased in
+User "1" --> "1" Authentication : uses
 ```
