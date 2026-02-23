@@ -1,16 +1,22 @@
+```mermaid
 sequenceDiagram
 
-participant User
+actor User
 participant Browser
 participant Server
-participant Database
 participant Storage
+participant Database
 
-User->>Browser: Select file + info
-Browser->>Server: Upload request
-Server->>Storage: Save file
-Server->>Database: Save metadata
+User->>Browser: Fill upload form + select file
+Browser->>Server: POST /upload.php (file + metadata)
+
+Server->>Server: Validate file type & size
+Server->>Storage: Save file to uploads folder
+Storage-->>Server: File path
+
+Server->>Database: Insert document metadata
 Database-->>Server: Confirmation
 
-Server-->>Browser: Upload success
-Browser-->>User: Show confirmation
+Server-->>Browser: Upload success response
+Browser-->>User: Show success message
+```
