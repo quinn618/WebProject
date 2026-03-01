@@ -1,31 +1,42 @@
 ```mermaid
 flowchart TD
+Début --> OuvrirSite[Ouvrir Plateforme Ghassra]
 
-Start --> OpenSite[Open Ghassra Platform]
+OuvrirSite --> Connecté{Utilisateur connecté?}
 
-OpenSite --> Logged{User logged in?}
+Connecté -- Non --> PageLogin[Aller à Connexion / Inscription]
+PageLogin --> Auth{Identifiants valides?}
+Auth -- Non --> PageLogin
+Auth -- Oui --> TableauBord
 
-Logged -- No --> LoginPage[Go to Login / Register]
-LoginPage --> Auth{Credentials valid?}
+Connecté -- Oui --> TableauBord[Accéder au Tableau de Bord]
 
-Auth -- No --> LoginPage
-Auth -- Yes --> Dashboard
+TableauBord --> Action{Choisir action}
 
-Logged -- Yes --> Dashboard[Access Dashboard]
+Action --> Parcourir[Parcourir Filères & Matières]
+Action --> MaBibliothèque[Accéder à Ma Bibliothèque]
 
-Dashboard --> Browse[Browse Filieres & Subjects]
-Browse --> SelectDoc[Select Document]
+Parcourir --> ChoisirDoc[Choisir Document]
+ChoisirDoc --> Gratuit{Document gratuit?}
+Gratuit -- Oui --> Télécharger[Télécharger Document]
+Gratuit -- Non --> Acheter[Acheter Document]
+Acheter --> Télécharger
+Télécharger --> AjouterBibliothèque[Ajouter à Ma Bibliothèque]
 
-SelectDoc --> Free{Document free?}
+MaBibliothèque --> OuvrirDocChoisi[Choisir Document dans Bibliothèque]
+OuvrirDocChoisi --> Ouvrir{Ouvrir Document?}
+Ouvrir -- Oui --> Visualiser[Visualiser/Lire Document]
+Ouvrir -- Non --> RetourBibliothèque[Retour à la Bibliothèque]
 
-Free -- Yes --> Download[Download Document]
-Free -- No --> Buy[Purchase Document]
-Buy --> Download
+Visualiser --> Interagir[Interagir: Naviguer, Zoomer, Rechercher]
+Interagir --> Fermer[Fermer Document]
+Fermer --> MaBibliothèque
 
-Dashboard --> UploadChoice{Upload document?}
-UploadChoice -- Yes --> Upload[Upload File]
-UploadChoice -- No --> End
+TableauBord --> UploadChoix[Uploader document?]
+UploadChoix -- Oui --> Upload[Uploader Fichier]
+UploadChoix -- Non --> Fin
 
-Download --> End
-Upload --> End
+Visualiser --> Fin
+MaBibliothèque --> Fin
+AjouterBibliothèque --> Fin
 ```
