@@ -1,5 +1,3 @@
-mermaid
-'''
 stateDiagram-v2
     [*] --> Uploadé
     Uploadé --> EnAttenteValidation: Utilisateur uploade
@@ -25,4 +23,3 @@ stateDiagram-v2
     
     Disponible --> Supprimé: Admin supprime
     Supprimé --> [*]
-'''
