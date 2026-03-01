@@ -1,12 +1,17 @@
 ```mermaid
 classDiagram
+class Role {
+    <<enumeration>>
+    ETUDIANT
+    ADMIN
+}
 class Utilisateur {
     +int id
     +string nom
     +string email
     +string mot_de_passe
     +string code_institut
-    +enum rôle {étudiant, admin}
+    +Role rôle
     +datetime date_inscription
     +float solde_portefeuille
     +sinscrire()
@@ -42,7 +47,12 @@ class Matiere {
     +ajouterDocument()
     +supprimerDocument()
 }
-
+class Statut {
+    <<enumeration>>
+    en_attente
+    validé
+    rejeté
+}
 class Document {
     +int id
     +string titre
@@ -51,7 +61,7 @@ class Document {
     +float prix
     +int utilisateur_id
     +int matiere_id
-    +enum statut {en_attente, validé, rejeté}
+    +Statut stat
     +int nb_telechargements
     +int nb_vues
     +float note_moyenne
@@ -68,11 +78,16 @@ class Document {
     +incrementerNbVues()
     +getFluxFichier()
 }
-
+class Type_access {
+    <<enumeration>>
+    acheté
+    téléchargé
+    uploadé
+}
 class UtilisateurDocument {
     +int utilisateur_id
     +int document_id
-    +enum type_acces {acheté, téléchargé, uploadé}
+    +type_access type
     +datetime date_acces
     +datetime derniere_ouverture
     +int nb_ouvertures
@@ -80,14 +95,18 @@ class UtilisateurDocument {
     +enregistrerOuverture()
     +getDerniereOuverture()
 }
-
+class Achatstatut{
+    <<enumeration>>
+    complété
+    remboursé
+}
 class Achat {
     +int id
     +int utilisateur_id
     +int document_id
     +datetime date_achat
     +float montant
-    +enum statut {complété, remboursé}
+    +Achatstatut statut
     +creerAchat()
     +getHistoriqueAchats()
     +rembourserAchat()
