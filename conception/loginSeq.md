@@ -1,23 +1,25 @@
-# Upload Document - Sequence Diagram
+# Login - Sequence Diagram
 
 ```mermaid
 sequenceDiagram
-actor Étudiant
+actor Utilisateur
 participant Navigateur
 participant Serveur
-participant Stockage
 participant BaseDonnées
 
-Étudiant->>Navigateur: Remplir formulaire + sélectionner fichier
-Navigateur->>Serveur: POST /upload.php (fichier + métadonnées)
+Utilisateur->>Navigateur: Saisir email, mot de passe, code institut
+Navigateur->>Serveur: POST /login.php
 
-Serveur->>Serveur: Valider type & taille fichier
-Serveur->>Stockage: Sauvegarder fichier
-Stockage-->>Serveur: Chemin du fichier
+Serveur->>BaseDonnées: Rechercher utilisateur par email
+BaseDonnées-->>Serveur: Données utilisateur
 
-Serveur->>BaseDonnées: Insérer métadonnées document
-BaseDonnées-->>Serveur: Confirmation
-
-Serveur-->>Navigateur: Réponse succès upload
-Navigateur-->>Étudiant: Afficher message succès
+alt Identifiants valides
+    Serveur->>Serveur: Vérifier mot de passe
+    Serveur->>Serveur: Vérifier code institut
+    Serveur->>Navigateur: Créer session + rediriger tableau de bord
+    Navigateur-->>Utilisateur: Connexion réussie
+else Identifiants invalides
+    Serveur-->>Navigateur: Message d'erreur
+    Navigateur-->>Utilisateur: Afficher erreur
+end
 ```
