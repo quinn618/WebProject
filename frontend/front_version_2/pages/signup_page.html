@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up | Ghassra core</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans (headings) + Be Vietnam Pro (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <!-- Material Symbols icon font -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <!-- Our stylesheet -->
+  <link rel="stylesheet" href="signup_page.css"/>
+</head>
+
+<body>
+
+  <main class="page-main">
+    <div class="content-grid">
+      <div class="brand-panel">
+
+        <!-- Top: badge + headline + description -->
+        <div class="brand-top">
+          <h1 class="brand-heading">
+            Join the <span class="brand-heading__accent">playground</span>
+          </h1>
+          <p class="brand-desc">
+            The ultimate hub for CS &amp; IoT students. Upload resources,
+            share code, and find your tribe in the sun-drenched digital lounge.
+          </p>
+        </div>
+
+       </div>
+     
+      <div class="card-outer">
+        <div class="card-glow"></div>
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Create Account</h2>
+            <p class="card-subtitle">Start your journey in the intelligent playground.</p>
+          </div>
+
+          <form class="signup-form" action="#" method="post">
+
+            <div class="field">
+              <label class="field__label" for="full-name">Full Name</label>
+              <div class="field__wrap">
+                <span class="material-symbols-outlined field__icon">person</span>
+                <input class="field__input" type="text" id="full-name" name="full-name" placeholder="Nour BK" autocomplete="name"/>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="email">Email Address</label>
+              <div class="field__wrap">
+                <span class="material-symbols-outlined field__icon">alternate_email</span>
+                <input class="field__input"type="email" id="email" name="email" placeholder="nour@isimm.edu" autocomplete="email"/>
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label class="field__label" for="major">Major</label>
+                <div class="field__wrap">
+                  <span class="material-symbols-outlined field__icon">school</span>
+                  <select class="field__input field__select" id="major" name="major">
+                    <option value="cs">Computer Science</option>
+                    <option value="iot">IoT Engineering</option>
+                    <option value="data">Data Analytics</option>
+                    <option value="cyber">Cyber Security</option>
+                  </select>
+                  <span class="material-symbols-outlined field__select-arrow">expand_more</span>
+                </div>
+            </div>
+              <!-- Institute Code -->
+              <div class="field">
+                <label class="field__label" for="institute-code">Institute Code</label>
+                <div class="field__wrap">
+                  <span class="material-symbols-outlined field__icon">apartment</span>
+                  <input class="field__input field__input--upper" type="text"  id="institute-code"name="institute-code" placeholder="GH-2024"autocomplete="organization"/>
+                  
+                </div>
+              </div>
+
+            </div>
+            <div class="field">
+              <label class="field__label" for="password">Password</label>
+              <div class="field__wrap">
+                <span class="material-symbols-outlined field__icon">lock</span>
+                <input class="field__input" type="password" id="password" name="password"placeholder="••••••••••••"autocomplete="new-password"/>
+              </div>
+            </div>
+            <!-- Submit button -->
+            <button class="btn-submit" type="submit">
+              Create my playground
+              <span class="material-symbols-outlined btn-submit__arrow">arrow_forward</span>
+            </button>
+
+          </form>
+          <div class="card-footer">
+            <p class="card-footer__text">
+              Already part of the squad?
+              <a href="login_page.html" class="card-footer__link">Login here</a>
+            </p>
+          </div>
+
+          <!-- Relatable student quote -->
+          <div class="quote-block">
+            <span class="material-symbols-outlined quote-block__icon">format_quote</span>
+            "Your late-night studying sessions deserve a better home."
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p class="footer__copy">© 2024 Ghassra core</p>
+    </div>
+  </footer>
+
+</body>
+</html>
