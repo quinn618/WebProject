@@ -476,8 +476,8 @@ a {
 /* 2-column card grid (drops to 1 column on mobile via media query) */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* two equal-width columns */
-  gap: 4rem;
+  grid-template-columns: repeat(4, 1fr); /* four equal-width columns */
+  gap: 2rem;
 }
 
 /* Individual feature card: frosted glass panel */
