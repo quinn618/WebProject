@@ -1,24 +1,25 @@
+# Login - Sequence Diagram
+
 ```mermaid
 sequenceDiagram
+actor Utilisateur
+participant Navigateur
+participant Serveur
+participant BaseDonnées
 
-actor User
-participant Browser
-participant Server
-participant Database
+Utilisateur->>Navigateur: Saisir email, mot de passe, code institut
+Navigateur->>Serveur: POST /login.php
 
-User->>Browser: Enter email, password, institute code
-Browser->>Server: POST /login.php
+Serveur->>BaseDonnées: Rechercher utilisateur par email
+BaseDonnées-->>Serveur: Données utilisateur
 
-Server->>Database: Query user by email
-Database-->>Server: User data
-
-alt Credentials valid
-    Server->>Server: Verify password
-    Server->>Server: Verify institute code
-    Server->>Browser: Start session + redirect dashboard
-    Browser-->>User: Login success
-else Credentials invalid
-    Server-->>Browser: Error message
-    Browser-->>User: Show error
+alt Identifiants valides
+    Serveur->>Serveur: Vérifier mot de passe
+    Serveur->>Serveur: Vérifier code institut
+    Serveur->>Navigateur: Créer session + rediriger tableau de bord
+    Navigateur-->>Utilisateur: Connexion réussie
+else Identifiants invalides
+    Serveur-->>Navigateur: Message d'erreur
+    Navigateur-->>Utilisateur: Afficher erreur
 end
 ```
