@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Ghassra core</title>
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  
+  <!-- External CSS -->
+  <link rel="stylesheet" href="style_resultat.css"/>
+  <script src="resultat_js.js"></script>
+</head>
+<body>
+  <!-- TopNavBar -->
+  <header class="site-header">
+    <nav class="navbar">
+      <div class="nav-left">
+        <a href="index.html" class="logo">Ghassra core</a>
+        <div class="search-desktop">
+          <span class="material-symbols-outlined search-icon-desktop">search</span>
+          <input class="search-input-desktop" type="text" placeholder="C++ exams"/>
+        </div>
+      </div>
+      <div class="nav-right">
+        <button class="icon-btn">
+          <span class="material-symbols-outlined">notifications</span>
+        </button>
+        <div class="avatar">
+          <a href="profile.html"><img alt="Student profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxsTZQGWXTDu2BHlBLeuSrx5Gb3_93JTbLvHmv3OoXoJmqvUwfRVsyfljzu1ahcvN9vD-dgfvyy2xXw76rfr2e-gQNZfFWSSWglx0Gb3cP68Lc_zi81ZaN1wp-tmlHEwJNlHuuWMhqTpyl7dADfvx6Hh14FovP8g_pS3sUxszuyDHeob0MQB5xy95_Vp9418fEwja2UT4a-1V2tvsQ6W4GCwdBUEIDfh9cIFn3oO1kJGym1wc9J8CQiUSCqRVBCDGcfCo_m15O-nI"/>
+          </a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="main-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <div class="filter-header">
+          <h3 class="filter-title">Filter Resources</h3>
+        </div>
+        <a class="sidebar-link active" href="#">
+          <span class="material-symbols-outlined">grid_view</span>
+          <span id="all_files">All Files</span>
+        </a>
+        <a class="sidebar-link" href="#">
+          <span class="material-symbols-outlined">description</span>
+          <span id="exam_papers">Exam Papers</span>
+        </a>
+        <a class="sidebar-link" href="#">
+          <span class="material-symbols-outlined">sticky_note_2</span>
+          <span id="cheat_sheets">Cheat Sheets</span>
+        </a>
+        <a class="sidebar-link" href="#">
+          <span class="material-symbols-outlined">terminal</span>
+          <span id="code_snippets">Code Snippets</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="content-area">
+      <div class="results-header">
+        <h1 class="results-title">Search Results for <span class="highlight" id="current-filter">"All Files"</span></h1>
+        <p class="results-count">Found <span id="nbre_document_trouver">124</span> documents</p>
+      </div>
+
+      <!-- Content Sections -->
+      <div id="all-files-section" class="content-section active">
+        <div class="results-grid">
+          <!-- Le contenu sera ajouté par JavaScript -->
+        </div>
+      </div>
+
+      <div id="exam-papers-section" class="content-section">
+        <div class="results-grid">
+          <!-- Le contenu sera ajouté par JavaScript -->
+        </div>
+      </div>
+
+      <div id="cheat-sheets-section" class="content-section">
+        <div class="results-grid">
+          <!-- Le contenu sera ajouté par JavaScript -->
+        </div>
+      </div>
+
+      <div id="code-snippets-section" class="content-section">
+        <div class="results-grid">
+          <!-- Le contenu sera ajouté par JavaScript -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  
+</body>
+</html>
