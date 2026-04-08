@@ -18,6 +18,16 @@
   </head>
 
   <body>
+    <header class="site-header">
+      <nav class="nav-bar">
+        <div class="nav-left">
+          <a href="index.html" class="logo" aria-label="Back to index page">
+            <span class="logo__brand">GhassraCore</span>
+            <span class="logo__hint">Back to home</span>
+          </a>
+        </div>
+      </nav>
+    </header>
     <!-- ── BACKGROUND ── -->
     <div class="bg-layer">
       <div class="bg-mesh"></div>
@@ -38,7 +48,7 @@
           <div class="brand-content brand-content--login">
             <span class="brand-badge">For last night students</span>
             <h1 class="brand-logo">
-             <a href="index.html"> Ghassra <span class="brand-logo__accent">core</span></a>
+              Welcome <span class="brand-logo__accent">back</span>
             </h1>
             <p class="brand-description">
               The intelligent playground for Computer Science, IoT, and Embedded
@@ -48,7 +58,6 @@
 
           <!-- shown in SIGNUP mode -->
           <div class="brand-content brand-content--signup">
-            
             <h1 class="brand-heading">
               Join the <span class="brand-heading__accent">playground</span>
             </h1>
@@ -130,7 +139,11 @@
                     />
                   </div>
                 </div>
-                <button class="btn-submit" type="submit" onclick="window.location.href='main.html'" >
+                <button
+                  class="btn-submit"
+                  type="submit"
+                  onclick="window.location.href = 'main.html'"
+                >
                   Login
                   <span class="material-symbols-outlined btn-submit__icon"
                     >arrow_forward</span
