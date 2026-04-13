@@ -12,7 +12,7 @@
 
   <!-- External CSS file -->
   <link rel="stylesheet" href="style_main.css"/>
-  <script src="main_js.js"></script>
+  <link rel="icon" type="imges/png" href="../assets/images/logo.png">
 </head>
 <body>
 
@@ -20,9 +20,9 @@
   <header class="site-header">
     <nav class="nav-inner">
       <div class="nav-left">
-        <a class="logo" href="index.html">Ghassra core</a>
+        <span class="logo">Ghassra core</span>
         <div class="nav-links">
-          <a href="#" class="nav-link active">Resources</a>
+          <a href="main.html" class="nav-link active">Resources</a>
           <a href="support.html" class="nav-link">Support</a>
         </div>
       </div>
@@ -57,147 +57,119 @@
           <input
             type="text"
             class="search-input"
-            placeholder="Search for C++ exams, IoT diagrams, or Embedded notes..."
+            placeholder="Search for C++ exams, IoT documents, or Embedded notes..."
           />
-          <button onclick="window.location.href='resultat.html'" class="btn-find">Find</button>
+          <button  class="btn-find">Find</button>
         </div>
       </div>
     </section>
 
     <!-- FILTER CHIPS -->
     <div class="chips-row">
-      <span class="chip chip-active">All Files</span>
-      <span class="chip">Exam Papers</span>
-      <span class="chip">Circuit Diagrams</span>
-      <span class="chip">Cheat Sheets</span>
-      <span class="chip">Code Snippets</span>
+      <span class="chip chip-active" data-filter="all">All Files</span>
+      <span class="chip" data-filter="exam">Exam Papers</span>
+      <span class="chip" data-filter="document">Documents</span>
+      <span class="chip" data-filter="cheat-sheet">Cheat Sheets</span>
+      <span class="chip" data-filter="code">Code</span>
     </div>
 
     <!-- RESOURCE CARDS GRID -->
-     <!-- tajm t3ml download share view save(bookmark)-->
     <div class="cards-grid">
-
       <!-- Card 1 -->
-      <div class="resource-card">
+      <div class="resource-card" data-category="code">
         <div class="card-img-wrap">
           <img
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLIvvZR-vOvY-xOhxNHqD1PEUouAwZGzq88mPm85Eohx2MiQwkrY1fWuf1yFhSXEGJSHPWPGsvmH2-M8PJp0ELg0ZSrqLFLDju2YvvlPY5AUkRMo0p6P_qbjefwUvpDx2fSHtPebXrg5i3FPHgTlOaVK4VC11To_vjp-cMdCHbpcI4WKRESFabtChQS3kRCu4K-0p80dCHHAVy5yhfzwvxu8MhzAiBwSzYcaL8EqjurLzjAiuGGm1Rn6WyqLXUiECMMEcbg7FP2bg"
-            alt="Network Layers notes"
+            src="..\assets\images\code.jpg"
+            alt="C++ code snippets"
           />
           <span class="card-badge badge-teal">High Aura</span>
         </div>
-        <h3 class="card-title">Network Layers Flashcards</h3>
+        <h3 class="card-title">C : how to acutally use pointers</h3>
         <div class="card-author">
           <div class="author-avatar bg-purple">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfio7ZxNuPRGSh6frca2gv2eaktUD6Qa9HgI64rh9AQat8dWEa1C1767SoDuOhiRHoEMV55SopSvG3iRgJ2E97FdUGvUnJTzLvdJfDFhvIYwfSBFyqCWGDTfNwOMGOkX7HrnKIG8nY_eDQZkIcrxouMCKSB3oe2sEpSFo7_YQJxEkI-_9_IxR97vaQYS5kQckDBt9BqnCQyn4uXeln7yM-ohOrAgC8RYFPIww3fjHwUDu4TTRX-EIx4BVUrKlcLb6dkqRrK7npAv8" alt="alex_dev"/>
+            <img src="..\assets\images\student avatar.jpg" alt="alex_dev"/>
           </div>
           <span class="author-name">@alex_dev</span>
         </div>
         <div class="card-footer">
-          <span class="file-type">PDF</span>
-          <button class="action-btn" aria-label="Download">
-            <span class="material-symbols-outlined">download</span>
+          <span class="file-type">.C</span>
+          <button class="action-btn" aria-label="view">
+            <span class="material-symbols-outlined">visibility</span>
           </button>
         </div>
       </div>
 
       <!-- Card 2 -->
-      <div class="resource-card">
+      <div class="resource-card" data-category="cheat-sheet">
         <div class="card-img-wrap">
           <img
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAR78IPdijBGEU43W03I2TT7WmTNi4hdMBxDZP84tFdv3A-p5WXQ7mecquk4URc-cdE3F0wwuwHwK9Wtrti6-BEcXS3RdEmSqoZFA5mtGSin8ad1p0LXEVjqyaqGq29ZG8A4WMD63uN0UCIuXLN-zzg1AVHfSRrq8vfvJqUvR0WOGXR1tpGEjXjrvBRMSnlPRlUpE97wGpubo4KozRpSuDyHQZG28Ag7HDTe3dZmeGVJH4_TfzzXTWV0lVMtt1JstWWMBSzHkBlJb0"
-            alt="C++ code"
+            src="..\assets\images\cheat-sheet.jpg"
+            alt="cheat sheet"
           />
           <span class="card-badge badge-blue">Essential</span>
         </div>
         <h3 class="card-title">C++ Cheat Sheet</h3>
         <div class="card-author">
           <div class="author-avatar bg-teal">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLOdt_azSLBKfJ7a1qliPKwl_fDx6459gCWLtSHMdOmlIK0GTniOx4l9TojfsCvnekrhhDxLc16U0DbgpAKA61EbJPTs-2Or2HBB73Cz8vQbwu4jzfX3KTvVxvLZAXT66luZ5Dvgbjx-K4v6oFq6rPb5WbtPrt-3DaoWAGRlXK_KM2M8ap1Q7_4XoQ3Shl4s59mfURCgIw9_-Khjkz-pOXINszon82k6zJZAncvwFFXYjvDtiplZ7UrVMrmsNRLSj9whPTYLddjck" alt="sarah_codes"/>
+            <img src="..\assets\images\student avatar.jpg" alt="sarah_codes"/>
           </div>
           <span class="author-name">@sarah_codes</span>
         </div>
         <div class="card-footer">
           <span class="file-type">Image</span>
-          <button class="action-btn" aria-label="View">
+          <button class="action-btn" aria-label="view">
             <span class="material-symbols-outlined">visibility</span>
           </button>
         </div>
       </div>
 
       <!-- Card 3 -->
-      <div class="resource-card">
+      <div class="resource-card" data-category="document">
         <div class="card-img-wrap">
           <img
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVzuykQeRzjDA5Kvz5wwk84lFDXqTXHGbVKgzfew5eOeTykZk3U9SPzz-43vq9zJA2OWoMvc0HVRR-ma7abWjN2WG1eLGr-FuuHwQ9K__bo6F3m04dKyo--0CtCiCfI6hjgu_ywKKrbn6yXZbexjwtG5rPF1XVQ3AMhFbXCYEXpmJJIzuq-DkhYvrxMtWoeCfSBgd3ijZU4MmGA56NwluyYdVObp26ewY0Vu5eT-TUbMB_XIE5R5vK_k2viJwqADk5FmGH9hlTOAc"
-            alt="Arduino board"
+            src="..\assets\images\document.jpg"
+            alt="communication Optique/IOT"
           />
           <span class="card-badge badge-red">Expert</span>
         </div>
-        <h3 class="card-title">Arduino Sensor Wiring</h3>
+        <h3 class="card-title">Fibre optique</h3>
         <div class="card-author">
           <div class="author-avatar bg-blue">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgVtTlvqewP0jV209SNcKhbrv1ePJvkq1UCyPquzAxX-66ePpBZgEhJRQ8juIUqVCFDsPInwx5SCG-QDtc1RDheIw8ZV4AbA9VbF51CFGH4qz4CajNnEesPQ4NywS-Xsl3VpVGGoAwWhUnmmoPcDLgr8HUCNyKnHK5Q7jU5M-YEfUYGTETue93TgDoVp_Gj5yN1uyNSFrMY7pqUKIycP87VKp18j0jc5wQxbF1Pvr6fxZwmWERHo62iwrNK5q99gctHRfGbwixD5Y" alt="iot_master"/>
+            <img src="..\assets\images\student avatar.jpg" alt="iot_master"/>
           </div>
           <span class="author-name">@iot_master</span>
         </div>
         <div class="card-footer">
-          <span class="file-type">Diagram</span>
-          <button class="action-btn" aria-label="Bookmark">
-            <span class="material-symbols-outlined">bookmark</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Card 4 -->
-      <div class="resource-card">
-        <div class="card-img-wrap">
-          <img
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtbeTCK0WMC4GcjbFgmjvtQ7fnMPJg9UduxYR-Z657akzWOh-xr7c_fcYCHu2u9w9SiN37xF4UkhtiyO4HtDUjqPdBjW2BVCgJF-lkfYPQA6SUdysu5yaBSa-RLWtqWIHqWc54QBKI5g18KzBBkWWa2gYxktP7x_cbFCfd3UVl6DgqvYsSfxJ3sOCX__rrtXMN9ioc_TlBROPZxBAp2s9sxvJX1eaEIRlvu9UizvzjeP6pyVTxgt-z_16SnGuenOiZzVlEGFZ56kk"
-            alt="Data structures"
-          />
-          <span class="card-badge badge-teal">High Aura</span>
-        </div>
-        <h3 class="card-title">Advanced Data Structures</h3>
-        <div class="card-author">
-          <div class="author-avatar bg-purple">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDd0ADTG0Uew2sGCpE-nV3Y7bzRnaFsC377LgKUPWl6U1Rvk3cmyM-56S-d1n72spskzBQfunsqOtRB4qZiZT1O0nvtK4Nk8X5lBZeP_S0syFtG87Ov2tNAIFs8kz2_qnoJtcU0qYoyvXC5K6ksmny08HjaKrFhAOKQyegOfaDIXrxLsPt1KnsI7GY5b7g0-935pX_uKxntMjIcaNO_Fzibt6TFmH_lgyBy3DiLmEBtY4ZVFlhbvHlV73Z1tIIluYlPoO8s2jbIaTA" alt="prof_x"/>
-          </div>
-          <span class="author-name">@prof_x</span>
-        </div>
-        <div class="card-footer">
-          <span class="file-type">Notes</span>
-          <button class="action-btn" aria-label="Download">
+          <span class="file-type">Document</span>
+          <button class="action-btn" aria-label="download">
             <span class="material-symbols-outlined">download</span>
           </button>
         </div>
       </div>
 
-      <!-- Card 5 -->
-      <div class="resource-card">
+      <!-- Card 4 -->
+      <div class="resource-card" data-category="exam">
         <div class="card-img-wrap">
           <img
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvFiA7OzA1nt_tuzBZP1QRb__jOPWMHKExFN5fDTjpe3gHki0uQpzzjyHo-jyQ6B1OijA3xmEUY_zFTC9EEBDCSvmnPFewhBvQM5aOXR7AIJrvp4aG4tk6mXq7XrX8upz8a2FVLPIeV9rz08qA-fblOVdgL7-G-7ysLaEv_vXw-DnGEWZ0mpBOoHUZTjRubLEQO8Eliqq3_6bMH7vTsttTIcJTkWPWinGp7GQTSstiNQ3lPT3_JOSbxn4NMnqAp4YCJWXJWl_MKC4"
-            alt="Server rack"
+            src="..\assets\images\exam.jpg"
+            alt="Data structures"
           />
-          <span class="card-badge badge-blue">Popular</span>
+          <span class="card-badge badge-teal">High Aura</span>
         </div>
-        <h3 class="card-title">Cloud Infrastructure Basics</h3>
+        <h3 class="card-title">Advanced Data Structures exam</h3>
         <div class="card-author">
-          <div class="author-avatar bg-teal">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDe8UU4urSxyffjrgkNosKPTJ1l-zham4uhK85H0FcrqFlBZaiEH-amghjlGNKjFDZ9qIIR9huQnB9NkewbrkVCrQgHefZLy4QafXbgJgzJ4sj1iSKX7fWMuq5pcqtT1JAtrIt6hEzSoPjmB9IOqwiL2x0_wXBuxmrhBPAZHD5v4bSKhW_Z64FCGEcaVsswE6bD43TNGhPGB4a7AR8vzkfg_Xo8VkdPFj7_cv_Gvatp4fJyp8AjyHGGHSLmAQR7d8K3gcrXMheYxd0" alt="cloud_dev"/>
+          <div class="author-avatar bg-purple">
+            <img src="..\assets\images\student avatar.jpg" alt="prof_x"/>
           </div>
-          <span class="author-name">@cloud_dev</span>
+          <span class="author-name">@prof_x</span>
         </div>
         <div class="card-footer">
-          <span class="file-type">Slide</span>
-          <button class="action-btn" aria-label="Share">
-            <span class="material-symbols-outlined">share</span>
+          <span class="file-type">PDF</span>
+          <button class="action-btn" aria-label="download">
+            <span class="material-symbols-outlined">download</span>
           </button>
         </div>
       </div>
-
-      
 
     </div>
     <!-- end .cards-grid -->
@@ -213,6 +185,6 @@
       </div>
       
   </footer>
-
+  <script src="main_js.js"></script>
 </body>
 </html>
