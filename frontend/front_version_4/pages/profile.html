@@ -16,15 +16,15 @@
   <!-- TopNavBar -->
   <nav class="topnav">
     <div class="topnav-left">
-      <a href="index.html" class="brand">Ghassra Core</a>
+      <a class="brand">Ghassra Core</a>
       <div class="topnav-links">
-        <a href="main.html">Main</a>
-        <a href="#">Dashboard</a>
-        <a href="#">Resources</a>
-        <a href="#">Community</a>
+        <a href="main.html">Resources</a>
       </div>
     </div>
     <div class="topnav-right">
+      <button class="plus-btn" onclick="openModal()" aria-label="Upload new note">
+        <span class="material-symbols-outlined">add</span>
+      </button>
       <button class="icon-btn" aria-label="Notifications">
         <span class="material-symbols-outlined">notifications</span>
       </button>
@@ -36,30 +36,29 @@
 
   <!-- SideNavBar -->
   <aside class="sidenav">
-    <div class="sidenav-profile">
-      <div class="avatar-md">
-        <img src="../assets/images/student avatar.jpg" alt="Student profile picture"/>
-      </div>
-      <div>
-        <h3>@DevStudent</h3>
-        <p>Computer Science Major</p>
-      </div>
-    </div>
+    
     <nav>
-      <a href="#"><span class="material-symbols-outlined">dashboard</span><span>Overview</span></a>
-      <a href="#"><span class="material-symbols-outlined">description</span><span>My Notes</span></a>
-      <a href="#"><span class="material-symbols-outlined">payments</span><span>Earnings</span></a>
-      <a href="#"><span class="material-symbols-outlined">download</span><span>Downloads</span></a>
       <a href="#" class="active">
         <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">account_circle</span>
         <span>Profile</span>
       </a>
+      <a href="notes.html"><span class="material-symbols-outlined">description</span><span>My Notes</span></a>
+      <a href="earnings.html"><span class="material-symbols-outlined">payments</span><span>Earnings</span></a>
+      <a href="downloads.html"><span class="material-symbols-outlined">download</span><span>Downloads</span></a>
+      
       <a href="#" class="logout" onclick="confirmLogout(event)">
         <span class="material-symbols-outlined">logout</span>
         <span>Logout</span>
       </a>
     </nav>
     <div class="sidenav-footer">
+      <div class="sold-card" onclick="openSoldModal()">
+        <div class="sold-card-icon">
+          <span class="material-symbols-outlined">shopping_cart</span>
+        </div>
+        <h4 id="soldCount">28</h4>
+        <p>My Sold</p>
+      </div>
       <button class="upload-btn-sidebar" onclick="openModal()">Upload New Note</button>
     </div>
   </aside>
@@ -83,7 +82,6 @@
           Computer Science student at ISIMM. Sharing my deep-dive notes on advanced algorithms and system architectures to help the next gen of coders.
         </p>
         <div class="hero-actions">
-          <button class="btn-primary" onclick="openModal()">Upload Note</button>
           <button class="btn-outline" onclick="openEditProfile()">Edit Profile</button>
         </div>
         <div class="hero-links">
@@ -97,7 +95,7 @@
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
             </svg>
-            <span><span class="__cf_email__" data-cfemail="3e535b5a105c4c597e5b465f534e525b105d5153">med@isimm.edu</span></span>
+            <span><span class="__cf_email__" data-cfemail="3e535b5a105c4c597e5b465f534e525b105d5153"><span class="__cf_email__" data-cfemail="234e4647634a504a4e4e0d464756">[email&#160;protected]</span></span></span>
           </a>
         </div>
       </div>
@@ -126,12 +124,13 @@
         <h4>300 <span>TND</span></h4>
         <p class="stat-label">Total Earnings</p>
       </div>
+      
       <div class="stat-card">
         <div class="stat-icon accent">
           <span class="material-symbols-outlined">visibility</span>
         </div>
         <h4>2,840</h4>
-        <p class="stat-label">Profile Visitors</p>
+        <p class="stat-label">Aura points</p>
       </div>
     </section>
 
@@ -245,18 +244,6 @@
             </div>
 
           </div>
-          <button class="history-btn">View Purchase History</button>
-        </div>
-
-        <!-- Elite Badge -->
-        <div class="elite-badge">
-          <span class="material-symbols-outlined elite-bg-icon">workspace_premium</span>
-          <h3>Elite Contributor</h3>
-          <p>You are in the top 5% of note creators this month. Keep it up!</p>
-          <div class="elite-bar-track">
-            <div class="elite-bar-fill"></div>
-          </div>
-          <span class="elite-level">Level 4 Scholar</span>
         </div>
 
       </aside>
@@ -530,131 +517,29 @@
 
     </div>
   </div>
-<!--
-  <script>
-    /* ── Upload Modal ── */
-    function openModal() {
-      document.getElementById('uploadModal').classList.add('open');
-    }
-    function closeModal() {
-      document.getElementById('uploadModal').classList.remove('open');
-    }
-    function handleOverlayClick(e) {
-      if (e.target === document.getElementById('uploadModal')) closeModal();
-    }
-
-    /* ── Edit Profile Modal ── */
-    function openEditProfile() {
-      document.getElementById('editProfileModal').classList.add('open');
-    }
-    function closeEditProfile() {
-      document.getElementById('editProfileModal').classList.remove('open');
-    }
-    /* ── Edit Profile Page View ── */
-    function openEditProfile() {
-      document.getElementById('profileView').style.display = 'none';
-      const ep = document.getElementById('editProfileView');
-      ep.style.display = 'block';
-      ep.style.opacity = '0';
-      ep.style.transform = 'translateX(2rem)';
-      requestAnimationFrame(() => {
-        ep.style.transition = 'opacity 0.3s, transform 0.3s';
-        ep.style.opacity = '1';
-        ep.style.transform = 'translateX(0)';
-      });
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    function closeEditProfile() {
-      const ep = document.getElementById('editProfileView');
-      ep.style.transition = 'opacity 0.25s, transform 0.25s';
-      ep.style.opacity = '0';
-      ep.style.transform = 'translateX(2rem)';
-      setTimeout(() => {
-        ep.style.display = 'none';
-        document.getElementById('profileView').style.display = 'block';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }, 250);
-    }
-    function previewAvatar(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = ev => {
-        document.getElementById('editAvatarPreview').src = ev.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-    function saveProfile() {
-      const name     = document.getElementById('editName').value.trim();
-      const username = document.getElementById('editUsername').value.trim();
-      const bio      = document.getElementById('editBio').value.trim();
-      const github   = document.getElementById('editGithub').value.trim();
-      const major    = document.getElementById('editMajor').value;
-
-      if (name)     document.querySelector('.hero-title-row h1').textContent = name;
-      if (username) document.querySelector('.sidenav-profile h3').textContent = '@' + username.replace(/^@/, '');
-      if (bio)      document.querySelector('.hero-desc').textContent = bio;
-      if (major)    document.querySelector('.sidenav-profile p').textContent = major + ' Major';
-      if (github)   document.querySelector('.hero-links a span:last-child').textContent = github;
-
-      const avatarSrc = document.getElementById('editAvatarPreview').src;
-      document.querySelectorAll('.hero-avatar img, .sidenav-profile .avatar-md img, .topnav-right .avatar-sm img')
-        .forEach(img => img.src = avatarSrc);
-
-      closeEditProfile();
-      setTimeout(() => showToast('Profile updated successfully!', 'check_circle', 'var(--secondary)'), 300);
-    }
-
-    /* ── Logout Modal ── */
-    function confirmLogout(e) {
-      e.preventDefault();
-      document.getElementById('logoutModal').classList.add('open');
-    }
-    function closeLogout() {
-      document.getElementById('logoutModal').classList.remove('open');
-    }
-    function handleLogoutOverlayClick(e) {
-      if (e.target === document.getElementById('logoutModal')) closeLogout();
-    }
-    function doLogout() {
-      closeLogout();
-      showToast('Logging you out…', 'logout', 'var(--error)');
-      setTimeout(() => {
-        // Redirect to login/index page
-        window.location.href = 'index.html';
-      }, 1500);
-    }
-
-    /* ── Toast helper ── */
-    function showToast(message, icon, color) {
-      const existing = document.getElementById('gc-toast');
-      if (existing) existing.remove();
-
-      const toast = document.createElement('div');
-      toast.id = 'gc-toast';
-      toast.style.cssText = `
-        position:fixed; bottom:5.5rem; left:50%; transform:translateX(-50%) translateY(1rem);
-        background:#fff; border:1px solid var(--surface-container-high);
-        box-shadow:0 8px 30px rgba(39,48,87,0.15); border-radius:var(--radius-full);
-        padding:0.75rem 1.5rem; display:flex; align-items:center; gap:0.5rem;
-        font-weight:600; font-size:0.875rem; color:var(--on-surface);
-        z-index:9999; opacity:0; transition:opacity 0.3s, transform 0.3s;
-        white-space:nowrap;
-      `;
-      toast.innerHTML = `<span class="material-symbols-outlined" style="color:${color};font-size:1.2rem;">${icon}</span>${message}`;
-      document.body.appendChild(toast);
-
-      requestAnimationFrame(() => {
-        toast.style.opacity = '1';
-        toast.style.transform = 'translateX(-50%) translateY(0)';
-      });
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(-50%) translateY(1rem)';
-        setTimeout(() => toast.remove(), 400);
-      }, 3000);
-    }
-  </script>
-  -->
-</body>
-</html>
+  <!-- Sold Modal -->
+  <div class="modal-overlay" id="soldModal" onclick="handleSoldOverlayClick(event)">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <div>
+          <h2>Add Sold Item</h2>
+          <p>Record a new successful sale.</p>
+        </div>
+        <button class="modal-close" onclick="closeSoldModal()" aria-label="Close">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Add Sold</label>
+          <input id="soldPrice" class="form-input" type="number" placeholder="0"/>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeSoldModal()">Cancel</button>
+        <button class="btn-submit" onclick="logSale()">
+          Add
+        </button>
+      </div>
+    </div>
+  </div>
