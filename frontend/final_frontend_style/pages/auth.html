@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ghassra core</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/css/style_auth.css" />
+  </head>
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-bar">
+        <div class="nav-left">
+          <a href="index.html" class="logo" aria-label="Back to index page">
+            <span class="logo__brand">GhassraCore</span>
+          </a>
+        </div>
+      </nav>
+    </header>
+    <!-- ── BACKGROUND ── -->
+    <div class="bg-layer">
+      <div class="bg-mesh"></div>
+      <div class="shape shape--top-left"></div>
+      <div class="shape shape--bottom-right"></div>
+    </div>
+
+    <main class="page-main">
+      <!--
+      data-mode="login"  → card on right, text on left
+      data-mode="signup" → card on left, text on right
+      JS toggles this attribute; CSS handles layout + transitions
+    -->
+      <div class="auth-wrapper" id="authWrapper" data-mode="login">
+        <!-- ── BRAND PANEL (text side) ── -->
+        <div class="brand-panel">
+          <!-- shown in LOGIN mode -->
+          <div class="brand-content brand-content--login">
+            <span class="brand-badge">For last night students</span>
+            <h1 class="brand-logo">
+              Welcome <span class="brand-logo__accent">back</span>
+            </h1>
+            <p class="brand-description">
+              The intelligent playground for Computer Science, IoT, and Embedded
+              Systems enthusiasts.
+            </p>
+          </div>
+
+          <!-- shown in SIGNUP mode -->
+          <div class="brand-content brand-content--signup">
+            <h1 class="brand-heading">
+              Join the <span class="brand-heading__accent">playground</span>
+            </h1>
+            <p class="brand-desc">
+              The ultimate hub for CS &amp; IoT students. Upload resources,
+              share code, and find your tribe in the sun-drenched digital
+              lounge.
+            </p>
+          </div>
+        </div>
+
+        <!-- ── CARD PANEL (form side) ── -->
+        <div class="card-panel">
+          <div class="card-glow"></div>
+          <div class="auth-card">
+            <!-- ── LOGIN FORM ── -->
+            <div class="auth-form" id="loginForm">
+              <div id="loginBlock">
+                <div class="card-header">
+                  <h2 class="card-title">Welcome Back</h2>
+                </div>
+                <form id="loginFormEl" action="#" method="post" novalidate>
+                  <div class="field">
+                    <label class="field__label" for="login-email"
+                      >Email Address</label
+                    >
+                    <div class="field__wrap">
+                      <span class="material-symbols-outlined field__icon"
+                        >alternate_email</span
+                      >
+                      <input
+                        class="field__input"
+                        type="email"
+                        id="login-email"
+                        name="email"
+                        placeholder="student@ghassra.edu"
+                        required
+                        autocomplete="email"
+                      />
+                    </div>
+                  </div>
+                  <div class="field">
+                    <div class="field__label-row">
+                      <label class="field__label" for="login-password"
+                        >Password</label
+                      >
+                      <a href="#" class="field__forgot" id="forgotPasswordLink"
+                        >Forgot Password?</a
+                      >
+                    </div>
+                    <div class="field__wrap">
+                      <span class="material-symbols-outlined field__icon"
+                        >lock</span
+                      >
+                      <input
+                        class="field__input"
+                        type="password"
+                        id="login-password"
+                        name="password"
+                        placeholder="••••••••"
+                        required
+                        minlength="8"
+                        autocomplete="current-password"
+                      />
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label class="field__label" for="login-code"
+                      >Institute Code</label
+                    >
+                    <div class="field__wrap">
+                      <span class="material-symbols-outlined field__icon"
+                        >school</span
+                      >
+                      <input
+                        class="field__input"
+                        type="text"
+                        id="login-code"
+                        name="institute-code"
+                        placeholder="e.g. INS-2024"
+                        required
+                        autocomplete="organization"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="form-alert"
+                    id="loginAlert"
+                    role="alert"
+                    aria-live="polite"
+                  ></div>
+                  <button class="btn-submit" type="submit">
+                    Login
+                    <span class="material-symbols-outlined btn-submit__icon"
+                      >arrow_forward</span
+                    >
+                  </button>
+                </form>
+                <p class="card-switch-link">
+                  Don't have an account?
+                  <a
+                    href="auth.html?mode=signup"
+                    class="card-switch-link__a"
+                    id="goToSignup"
+                    >Sign Up</a
+                  >
+                </p>
+                <div class="meme-quote">
+                  <p class="meme-quote__text">
+                    "Real programmers count from 0, but real students count the
+                    minutes until the deadline."
+                  </p>
+                </div>
+              </div>
+
+              <div id="resetBlock" class="reset-block" hidden>
+                <div class="card-header">
+                  <h2 class="card-title">Reset Password</h2>
+                  <p class="card-subtitle">
+                    Enter your email + institute code and choose a new password.
+                  </p>
+                </div>
+
+                <form id="resetFormEl" action="#" method="post" novalidate>
+                  <div class="field">
+                    <label class="field__label" for="reset-email">Email</label>
+                    <div class="field__wrap">
+                      <span class="material-symbols-outlined field__icon"
+                        >alternate_email</span
+                      >
+                      <input
+                        class="field__input"
+                        type="email"
+                        id="reset-email"
+                        placeholder="student@ghassra.edu"
+                        required
+                        autocomplete="email"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label class="field__label" for="reset-code"
+                      >Institute Code</label
+                    >
+                    <div class="field__wrap">
+                      <span class="material-symbols-outlined field__icon"
+                        >school</span
+                      >
+                      <input
+                        class="field__input"
+                        type="text"
+                        id="reset-code"
+                        placeholder="e.g. INS-2024"
+                        required
+                        autocomplete="organization"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label class="field__label" for="reset-password"
+                      >New Password</label
+                    >
+                    <div class="field__wrap">
+                      <span class="material-symbols-outlined field__icon"
+                        >lock</span
+                      >
+                      <input
+                        class="field__input"
+                        type="password"
+                        id="reset-password"
+                        placeholder="••••••••••••"
+                        required
+                        minlength="8"
+                        autocomplete="new-password"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label class="field__label" for="reset-password-confirm"
+                      >Confirm New Password</label
+                    >
+                    <div class="field__wrap">
+                      <span class="material-symbols-outlined field__icon"
+                        >lock</span
+                      >
+                      <input
+                        class="field__input"
+                        type="password"
+                        id="reset-password-confirm"
+                        placeholder="••••••••••••"
+                        required
+                        minlength="8"
+                        autocomplete="new-password"
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    class="form-alert"
+                    id="resetAlert"
+                    role="alert"
+                    aria-live="polite"
+                  ></div>
+
+                  <button class="btn-submit" type="submit">
+                    Reset Password
+                    <span class="material-symbols-outlined btn-submit__icon"
+                      >arrow_forward</span
+                    >
+                  </button>
+                </form>
+
+                <p class="card-switch-link">
+                  <a href="#" class="card-switch-link__a" id="backToLoginLink"
+                    >Back to login</a
+                  >
+                </p>
+              </div>
+            </div>
+
+            <!-- ── SIGNUP FORM ── -->
+            <div class="auth-form" id="signupForm">
+              <div class="card-header">
+                <h2 class="card-title">Create Account</h2>
+                <p class="card-subtitle">
+                  Start your journey in the intelligent playground.
+                </p>
+              </div>
+              <form id="signupFormEl" action="#" method="post" novalidate>
+                <div class="field">
+                  <label class="field__label" for="signup-name"
+                    >Full Name</label
+                  >
+                  <div class="field__wrap">
+                    <span class="material-symbols-outlined field__icon"
+                      >person</span
+                    >
+                    <input
+                      class="field__input"
+                      type="text"
+                      id="signup-name"
+                      name="full-name"
+                      placeholder="Nour BK"
+                      required
+                      autocomplete="name"
+                    />
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="field__label" for="signup-institute"
+                    >Institute Name</label
+                  >
+                  <div class="field__wrap">
+                    <span class="material-symbols-outlined field__icon"
+                      >domain</span
+                    >
+                    <input
+                      class="field__input"
+                      type="text"
+                      id="signup-institute"
+                      name="institute-name"
+                      placeholder="e.g. ISIMM"
+                      required
+                      autocomplete="organization"
+                    />
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="field__label" for="signup-email"
+                    >Email Address</label
+                  >
+                  <div class="field__wrap">
+                    <span class="material-symbols-outlined field__icon"
+                      >alternate_email</span
+                    >
+                    <input
+                      class="field__input"
+                      type="email"
+                      id="signup-email"
+                      name="email"
+                      placeholder="nour@isimm.edu"
+                      required
+                      autocomplete="email"
+                    />
+                  </div>
+                </div>
+                <div class="field-row">
+                  <div class="field">
+                    <label class="field__label" for="signup-major">Major</label>
+                    <div class="field__wrap">
+                      <span class="material-symbols-outlined field__icon"
+                        >school</span
+                      >
+                      <select
+                        class="field__input field__select"
+                        id="signup-major"
+                        name="major"
+                      >
+                        <option value="cs">Computer Science</option>
+                        <option value="iot">IoT Engineering</option>
+                        <option value="data">Data Analytics</option>
+                        <option value="cyber">Cyber Security</option>
+                      </select>
+                      <span
+                        class="material-symbols-outlined field__select-arrow"
+                        >expand_more</span
+                      >
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label class="field__label" for="signup-code"
+                      >Institute Code</label
+                    >
+                    <div class="field__wrap">
+                      <span class="material-symbols-outlined field__icon"
+                        >apartment</span
+                      >
+                      <input
+                        class="field__input field__input--upper"
+                        type="text"
+                        id="signup-code"
+                        name="institute-code"
+                        placeholder="GH-2024"
+                        required
+                        autocomplete="organization"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="field__label" for="signup-level">Level</label>
+                  <div class="field__wrap">
+                    <span class="material-symbols-outlined field__icon"
+                      >school</span
+                    >
+                    <select
+                      class="field__input field__select"
+                      id="signup-level"
+                      name="level"
+                      required
+                    >
+                      <option value="" selected disabled>
+                        Select your level
+                      </option>
+                      <option>1st Year</option>
+                      <option>2nd Year</option>
+                      <option>3rd Year</option>
+                      <option>4th Year</option>
+                      <option>5th Year</option>
+                      <option>Master 1</option>
+                      <option>Master 2</option>
+                    </select>
+                    <span class="material-symbols-outlined field__select-arrow"
+                      >expand_more</span
+                    >
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="field__label" for="signup-password"
+                    >Password</label
+                  >
+                  <div class="field__wrap">
+                    <span class="material-symbols-outlined field__icon"
+                      >lock</span
+                    >
+                    <input
+                      class="field__input"
+                      type="password"
+                      id="signup-password"
+                      name="password"
+                      placeholder="••••••••••••"
+                      required
+                      minlength="8"
+                      autocomplete="new-password"
+                    />
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="field__label" for="signup-password-confirm"
+                    >Confirm Password</label
+                  >
+                  <div class="field__wrap">
+                    <span class="material-symbols-outlined field__icon"
+                      >lock</span
+                    >
+                    <input
+                      class="field__input"
+                      type="password"
+                      id="signup-password-confirm"
+                      name="password-confirm"
+                      placeholder="••••••••••••"
+                      required
+                      minlength="8"
+                      autocomplete="new-password"
+                    />
+                  </div>
+                </div>
+
+                <div
+                  class="form-alert"
+                  id="signupAlert"
+                  role="alert"
+                  aria-live="polite"
+                ></div>
+                <button class="btn-submit" type="submit">
+                  Create my playground
+                  <span class="material-symbols-outlined btn-submit__icon"
+                    >arrow_forward</span
+                  >
+                </button>
+              </form>
+              <p class="card-switch-link">
+                Already part of the squad?
+                <a
+                  href="auth.html?mode=login"
+                  class="card-switch-link__a"
+                  id="goToLogin"
+                  >Login here</a
+                >
+              </p>
+              <div class="quote-block">
+                <span class="material-symbols-outlined quote-block__icon"
+                  >format_quote</span
+                >
+                "Your late-night studying sessions deserve a better home."
+              </div>
+            </div>
+          </div>
+          <!-- /.auth-card -->
+        </div>
+        <!-- /.card-panel -->
+      </div>
+      <!-- /.auth-wrapper -->
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <p class="footer__copy">© 2024 Ghassra core.</p>
+      </div>
+    </footer>
+
+    <script src="../assets/js/auth_js.js"></script>
+  </body>
+</html>

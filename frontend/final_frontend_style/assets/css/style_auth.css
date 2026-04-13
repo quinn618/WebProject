@@ -63,6 +63,18 @@ button {
   color: #0f3297;
 }
 
+/* ── INLINE FORM ALERT ─────────────────────────────────── */
+.form-alert {
+  min-height: 1.1rem;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ac3149;
+}
+.form-alert.success {
+  color: #006b5e;
+}
+
 /* ── BODY ────────────────────────────────────────────────── */
 body {
   font-family: var(--font-body);
@@ -486,6 +498,32 @@ form {
   position: relative;
 }
 
+.field__toggle {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--outline);
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+.field__toggle:hover {
+  background: var(--surface-container-high);
+  color: var(--primary);
+}
+
+.field__input--pw {
+  padding-right: 3rem;
+}
+
 .field__icon {
   position: absolute;
   left: 1rem;
@@ -604,6 +642,11 @@ form {
   font-style: italic;
   font-weight: 500;
   line-height: 1.6;
+}
+
+/* Reset password block */
+.reset-block {
+  width: 100%;
 }
 
 .quote-block {
