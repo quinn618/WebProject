@@ -239,17 +239,10 @@ a {
 /* Hover: soft lavender background */
 .nav-link:hover {
   background: #dde1ff;
+  border-radius: var(--radius-full);
 }
 
-/* Active (current page) link: blue underline instead of pill */
-.nav-link.active {
-  font-weight: 700;
-  color: var(--primary);
-  opacity: 1;
-  padding: 0;
-  border-bottom: 2px solid var(--primary);
-  border-radius: 0;
-}
+
 
 /* Right group: Login + Sign Up buttons */
 .nav-right {
