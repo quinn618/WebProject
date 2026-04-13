@@ -1,21 +1,21 @@
-const wrapper = document.getElementById("authWrapper");
-const goToSignup = document.getElementById("goToSignup");
-const goToLogin = document.getElementById("goToLogin");
+/**
+ * GhassraCore — auth_js.js  (API-integrated version)
+ * Replaces all localStorage user-management with AuthAPI calls.
+ * UI logic (toggle, password visibility, form layout) is unchanged.
+ */
 
-const LS_USERS_KEY = "gc_users";
-const LS_SESSION_KEY = "gc_session";
+/* ── Mode toggle (login ↔ signup) ── */
+const wrapper        = document.getElementById("authWrapper");
+const goToSignup     = document.getElementById("goToSignup");
+const goToLogin      = document.getElementById("goToLogin");
 
 function ensurePasswordToggle(inputEl) {
   if (!inputEl) return;
   if (inputEl.getAttribute("type") !== "password") return;
-
   const wrap = inputEl.closest(".field__wrap");
   if (!wrap) return;
-
   inputEl.classList.add("field__input--pw");
-
   if (wrap.querySelector(".field__toggle")) return;
-
   const btn = document.createElement("button");
   btn.type = "button";
   btn.className = "field__toggle";
@@ -24,10 +24,7 @@ function ensurePasswordToggle(inputEl) {
   btn.addEventListener("click", () => {
     const isHidden = inputEl.type === "password";
     inputEl.type = isHidden ? "text" : "password";
-    btn.setAttribute(
-      "aria-label",
-      isHidden ? "Hide password" : "Show password",
-    );
+    btn.setAttribute("aria-label", isHidden ? "Hide password" : "Show password");
     const icon = btn.querySelector(".material-symbols-outlined");
     if (icon) icon.textContent = isHidden ? "visibility_off" : "visibility";
   });
@@ -42,78 +39,42 @@ function initPasswordToggles() {
 
 function setMode(mode) {
   if (!wrapper) return;
-
   const nextMode = mode === "signup" ? "signup" : "login";
   wrapper.dataset.mode = nextMode;
   document.title =
     nextMode === "signup" ? "Sign Up | Ghassra core" : "Login | Ghassra core";
-
-  const nextUrl = `${window.location.pathname}?mode=${nextMode}`;
-  window.history.replaceState({}, "", nextUrl);
+  window.history.replaceState(
+    {},
+    "",
+    `${window.location.pathname}?mode=${nextMode}`
+  );
 }
 
-function switchToSignup(e) {
-  e.preventDefault();
-  setMode("signup");
-}
-
-function switchToLogin(e) {
-  e.preventDefault();
-  setMode("login");
-}
+function switchToSignup(e) { e.preventDefault(); setMode("signup"); }
+function switchToLogin(e)  { e.preventDefault(); setMode("login");  }
 
 const urlParams = new URLSearchParams(window.location.search);
 setMode(urlParams.get("mode"));
 
 if (goToSignup) goToSignup.addEventListener("click", switchToSignup);
-if (goToLogin) goToLogin.addEventListener("click", switchToLogin);
+if (goToLogin)  goToLogin.addEventListener("click",  switchToLogin);
 
-function readUsers() {
-  try {
-    return JSON.parse(localStorage.getItem(LS_USERS_KEY) || "[]");
-  } catch {
-    return [];
-  }
-}
-
-function writeUsers(users) {
-  localStorage.setItem(LS_USERS_KEY, JSON.stringify(users));
-}
-
-function setSession(userId) {
-  localStorage.setItem(LS_SESSION_KEY, JSON.stringify({ userId }));
-}
-
-function getSessionUserId() {
-  try {
-    const session = JSON.parse(localStorage.getItem(LS_SESSION_KEY) || "null");
-    return session && session.userId ? session.userId : null;
-  } catch {
-    return null;
-  }
-}
-
+/* ── Validation helpers (unchanged from original) ── */
 function normalizeEmail(email) {
-  return String(email || "")
-    .trim()
-    .toLowerCase();
+  return String(email || "").trim().toLowerCase();
 }
-
 function isValidEmail(email) {
-  const value = normalizeEmail(email);
-  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value);
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(normalizeEmail(email));
 }
-
 function passwordMeetsPolicy(password) {
-  const value = String(password || "");
-  // >= 8 chars, at least 1 lower, 1 upper, 1 digit, 1 symbol, no spaces
+  const v = String(password || "");
   return (
-    value.length >= 8 &&
-    /[a-z]/.test(value) &&
-    /[A-Z]/.test(value) &&
-    /\d/.test(value) &&
-    /[^A-Za-z0-9]/.test(value) &&
-    !/\s/.test(value)
+    v.length >= 8 &&
+    /[a-z]/.test(v) &&
+    /[A-Z]/.test(v) &&
+    /\d/.test(v) &&
+    /[^A-Za-z0-9]/.test(v) &&
+    !/\s/.test(v)
   );
 }
 
@@ -123,88 +84,76 @@ function showAlert(el, message, { ok = false } = {}) {
   el.classList.toggle("success", ok);
 }
 
+function setFormBusy(form, busy) {
+  if (!form) return;
+  form
+    .querySelectorAll("button[type=submit], input, select, textarea")
+    .forEach((el) => (el.disabled = busy));
+}
+
 function redirectToApp() {
   window.location.href = "main.html";
 }
 
+/* ── DOMContentLoaded ── */
 document.addEventListener("DOMContentLoaded", () => {
-  // If already logged in, skip auth
-  if (getSessionUserId()) {
+  // If a token already exists, skip the auth screen
+  if (window.GC.getToken()) {
     redirectToApp();
     return;
   }
 
   initPasswordToggles();
 
-  const loginBlock = document.getElementById("loginBlock");
-  const resetBlock = document.getElementById("resetBlock");
+  const loginBlock       = document.getElementById("loginBlock");
+  const resetBlock       = document.getElementById("resetBlock");
   const forgotPasswordLink = document.getElementById("forgotPasswordLink");
-  const backToLoginLink = document.getElementById("backToLoginLink");
-  const resetForm = document.getElementById("resetFormEl");
-  const resetAlert = document.getElementById("resetAlert");
+  const backToLoginLink  = document.getElementById("backToLoginLink");
 
-  const loginForm = document.getElementById("loginFormEl");
-  const signupForm = document.getElementById("signupFormEl");
-  const loginAlert = document.getElementById("loginAlert");
+  const loginForm   = document.getElementById("loginFormEl");
+  const signupForm  = document.getElementById("signupFormEl");
+  const loginAlert  = document.getElementById("loginAlert");
   const signupAlert = document.getElementById("signupAlert");
 
+  /* ── Forgot-password view toggle (UI only — no dedicated endpoint yet) ── */
   function openResetView() {
     if (loginBlock) loginBlock.hidden = true;
     if (resetBlock) resetBlock.hidden = false;
-    showAlert(resetAlert, "");
-
-    // Convenience: prefill from login inputs if present
-    const loginEmail = document.getElementById("login-email")?.value || "";
-    const loginCode = document.getElementById("login-code")?.value || "";
     const resetEmail = document.getElementById("reset-email");
-    const resetCode = document.getElementById("reset-code");
-    if (resetEmail && !resetEmail.value) resetEmail.value = loginEmail;
-    if (resetCode && !resetCode.value) resetCode.value = loginCode;
+    const loginEmail = document.getElementById("login-email");
+    if (resetEmail && loginEmail && !resetEmail.value)
+      resetEmail.value = loginEmail.value;
+    initPasswordToggles();
   }
-
   function closeResetView() {
     if (resetBlock) resetBlock.hidden = true;
     if (loginBlock) loginBlock.hidden = false;
-    showAlert(resetAlert, "");
   }
 
-  if (forgotPasswordLink) {
+  if (forgotPasswordLink)
     forgotPasswordLink.addEventListener("click", (e) => {
       e.preventDefault();
       openResetView();
-      initPasswordToggles();
     });
-  }
-
-  if (backToLoginLink) {
+  if (backToLoginLink)
     backToLoginLink.addEventListener("click", (e) => {
       e.preventDefault();
       closeResetView();
     });
-  }
 
+  /* ── Login form ── */
   if (loginForm) {
-    loginForm.addEventListener("submit", (e) => {
+    loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       showAlert(loginAlert, "");
 
-      const email = normalizeEmail(
-        document.getElementById("login-email")?.value,
-      );
-      const password = document.getElementById("login-password")?.value || "";
-      const instituteCode = (
-        document.getElementById("login-code")?.value || ""
-      ).trim();
+      const email          = normalizeEmail(document.getElementById("login-email")?.value);
+      const password       = document.getElementById("login-password")?.value || "";
+      const instituteCode  = (document.getElementById("login-code")?.value || "").trim();
 
+      // Client-side validation (keep UX fast)
       if (!isValidEmail(email)) {
         showAlert(loginAlert, "Please enter a valid email address.");
-        return;
-      }
-      if (!passwordMeetsPolicy(password)) {
-        showAlert(
-          loginAlert,
-          "Password must be 8+ chars with upper/lower/number/symbol (no spaces).",
-        );
         return;
       }
       if (!instituteCode) {
@@ -212,147 +161,52 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const users = readUsers();
-      const user = users.find(
-        (u) =>
-          normalizeEmail(u.email) === email &&
-          String(u.instituteCode || "").toLowerCase() ===
-            instituteCode.toLowerCase(),
-      );
-      if (!user) {
-        showAlert(
-          loginAlert,
-          "No account found for this email + institute code.",
-        );
-        return;
-      }
-      if (String(user.password || "") !== password) {
-        showAlert(loginAlert, "Incorrect password.");
-        return;
-      }
+      setFormBusy(loginForm, true);
+      try {
+        const data = await window.GC.AuthAPI.login({
+          email,
+          password,
+          institute_code: instituteCode,
+        });
 
-      setSession(user.id);
-      showAlert(loginAlert, "Logged in successfully. Redirecting…", {
-        ok: true,
-      });
-      setTimeout(redirectToApp, 400);
+        // Backend should return { success, token, user }
+        if (data?.success) {
+          showAlert(loginAlert, "Logged in successfully. Redirecting…", { ok: true });
+          setTimeout(redirectToApp, 400);
+        } else {
+          showAlert(loginAlert, data?.message || "Login failed. Please try again.");
+        }
+      } catch (err) {
+        showAlert(loginAlert, err.message || "Network error. Please try again.");
+      } finally {
+        setFormBusy(loginForm, false);
+      }
     });
   }
 
-  if (resetForm) {
-    resetForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      showAlert(resetAlert, "");
-
-      const email = normalizeEmail(
-        document.getElementById("reset-email")?.value,
-      );
-      const instituteCode = (
-        document.getElementById("reset-code")?.value || ""
-      ).trim();
-      const newPassword =
-        document.getElementById("reset-password")?.value || "";
-      const confirm =
-        document.getElementById("reset-password-confirm")?.value || "";
-
-      if (!isValidEmail(email)) {
-        showAlert(resetAlert, "Please enter a valid email address.");
-        return;
-      }
-      if (!instituteCode) {
-        showAlert(resetAlert, "Institute code is required.");
-        return;
-      }
-      if (!passwordMeetsPolicy(newPassword)) {
-        showAlert(
-          resetAlert,
-          "Password must be 8+ chars with upper/lower/number/symbol (no spaces).",
-        );
-        return;
-      }
-      if (newPassword !== confirm) {
-        showAlert(resetAlert, "Password confirmation does not match.");
-        return;
-      }
-
-      const users = readUsers();
-      const idx = users.findIndex(
-        (u) =>
-          normalizeEmail(u.email) === email &&
-          String(u.instituteCode || "").toLowerCase() ===
-            instituteCode.toLowerCase(),
-      );
-
-      if (idx < 0) {
-        showAlert(
-          resetAlert,
-          "No account found for this email + institute code.",
-        );
-        return;
-      }
-
-      users[idx] = {
-        ...users[idx],
-        password: newPassword,
-        updatedAt: new Date().toISOString(),
-      };
-      writeUsers(users);
-
-      closeResetView();
-      showAlert(loginAlert, "Password updated. You can log in now.", {
-        ok: true,
-      });
-    });
-  }
-
+  /* ── Signup form ── */
   if (signupForm) {
-    signupForm.addEventListener("submit", (e) => {
+    signupForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       showAlert(signupAlert, "");
 
-      const fullName = (
-        document.getElementById("signup-name")?.value || ""
-      ).trim();
-      const instituteName = (
-        document.getElementById("signup-institute")?.value || ""
-      ).trim();
-      const email = normalizeEmail(
-        document.getElementById("signup-email")?.value,
-      );
-      const major = document.getElementById("signup-major")?.value || "";
-      const instituteCode = (
-        document.getElementById("signup-code")?.value || ""
-      ).trim();
-      const level = document.getElementById("signup-level")?.value || "";
-      const password = document.getElementById("signup-password")?.value || "";
-      const passwordConfirm =
-        document.getElementById("signup-password-confirm")?.value || "";
+      const fullName       = (document.getElementById("signup-name")?.value      || "").trim();
+      const instituteName  = (document.getElementById("signup-institute")?.value || "").trim();
+      const email          = normalizeEmail(document.getElementById("signup-email")?.value);
+      const major          = document.getElementById("signup-major")?.value || "";
+      const instituteCode  = (document.getElementById("signup-code")?.value    || "").trim();
+      const level          = document.getElementById("signup-level")?.value    || "";
+      const password       = document.getElementById("signup-password")?.value || "";
+      const passwordConfirm = document.getElementById("signup-password-confirm")?.value || "";
 
-      if (!fullName) {
-        showAlert(signupAlert, "Full name is required.");
-        return;
-      }
-      if (!instituteName) {
-        showAlert(signupAlert, "Institute name is required.");
-        return;
-      }
-      if (!isValidEmail(email)) {
-        showAlert(signupAlert, "Please enter a valid email address.");
-        return;
-      }
-      if (!instituteCode) {
-        showAlert(signupAlert, "Institute code is required.");
-        return;
-      }
-      if (!level) {
-        showAlert(signupAlert, "Please select your level.");
-        return;
-      }
+      // Client-side validation
+      if (!fullName)       { showAlert(signupAlert, "Full name is required.");              return; }
+      if (!instituteName)  { showAlert(signupAlert, "Institute name is required.");         return; }
+      if (!isValidEmail(email)) { showAlert(signupAlert, "Please enter a valid email address."); return; }
+      if (!instituteCode)  { showAlert(signupAlert, "Institute code is required.");         return; }
+      if (!level)          { showAlert(signupAlert, "Please select your level.");           return; }
       if (!passwordMeetsPolicy(password)) {
-        showAlert(
-          signupAlert,
-          "Password must be 8+ chars with upper/lower/number/symbol (no spaces).",
-        );
+        showAlert(signupAlert, "Password must be 8+ chars with upper/lower/number/symbol (no spaces).");
         return;
       }
       if (password !== passwordConfirm) {
@@ -360,40 +214,30 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const users = readUsers();
-      const exists = users.some(
-        (u) =>
-          normalizeEmail(u.email) === email &&
-          String(u.instituteCode || "").toLowerCase() ===
-            instituteCode.toLowerCase(),
-      );
-      if (exists) {
-        showAlert(
-          signupAlert,
-          "An account already exists for this email + institute code.",
-        );
-        return;
+      setFormBusy(signupForm, true);
+      try {
+        const data = await window.GC.AuthAPI.register({
+          name:              fullName,
+          email,
+          password,
+          password_confirm:  passwordConfirm,
+          institute_name:    instituteName,
+          institute_code:    instituteCode,
+          major,
+          level,
+        });
+
+        if (data?.success) {
+          showAlert(signupAlert, "Account created. Redirecting…", { ok: true });
+          setTimeout(redirectToApp, 400);
+        } else {
+          showAlert(signupAlert, data?.message || "Registration failed. Please try again.");
+        }
+      } catch (err) {
+        showAlert(signupAlert, err.message || "Network error. Please try again.");
+      } finally {
+        setFormBusy(signupForm, false);
       }
-
-      const newUser = {
-        id: "u_" + Date.now(),
-        name: fullName,
-        instituteName,
-        instituteCode,
-        level,
-        major,
-        email,
-        password,
-        sold: 0,
-        avatarDataUrl: null,
-        createdAt: new Date().toISOString(),
-      };
-
-      users.push(newUser);
-      writeUsers(users);
-      setSession(newUser.id);
-      showAlert(signupAlert, "Account created. Redirecting…", { ok: true });
-      setTimeout(redirectToApp, 400);
     });
   }
 });
