@@ -1,93 +1,90 @@
-// contient toutes les ressouces organisées par catégorie
-//resourcesData is an object and 'all','exam'... like atributes
-const resourcesData = {
-    // Catégorie 'all' : contient toutes les ressources sans filtre
-    all: [
-        {
-            id: 1,
-            title: "C : how to actually use pointers",
-            author: "@alex_dev",
-            authorAvatar: "../assets/images/student avatar.jpg",
-            image: "../assets/images/code.jpg",
-            badge: "High Aura",
-            badgeClass: "badge-teal",
-            fileType: ".C",
-            category: "code",
-            action: "view"
-        },
-        {
-            id: 2,
-            title: "C++ Cheat Sheet",
-            author: "@sarah_codes",
-            authorAvatar: "../assets/images/student avatar.jpg",
-            image: "../assets/images/cheat-sheet.jpg",
-            badge: "Essential",
-            badgeClass: "badge-blue",
-            fileType: "Image",
-            category: "cheat-sheet",
-            action: "download"
-        },
-        {
-            id: 3,
-            title: "Fibre optique",
-            author: "@iot_master",
-            authorAvatar: "../assets/images/student avatar.jpg",
-            image: "../assets/images/document.jpg",
-            badge: "Expert",
-            badgeClass: "badge-red",
-            fileType: "PDF",
-            category: "document",
-            action: "download"
-        },
-        {
-            id: 4,
-            title: "Advanced Data Structures exam",
-            author: "@prof_x",
-            authorAvatar: "../assets/images/student avatar.jpg",
-            image: "../assets/images/exam.jpg",
-            badge: "High Aura",
-            badgeClass: "badge-teal",
-            fileType: "PDF",
-            category: "exam",
-            action: "download"
-        },
-    ]
-};
-//shared state
-//every render read both of them at the same time
+const API_BASE = '../backend/api';
+
+// ==================== API CALLS ====================
+
+async function apiRequest(endpoint, method = 'GET', body = null) {
+    const token = localStorage.getItem('token');
+    const options = {
+        method,
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': 'Bearer ' + token })
+        }
+    };
+    if (body) options.body = JSON.stringify(body);
+
+    const res  = await fetch(API_BASE + endpoint, options);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    return data.data;
+}
+
+// ==================== STATE ====================
+
+let resourcesData = { all: [] };
 let currentFilter = 'all';
 let currentQuery  = '';
-//function that writes and read the code in the DOM
-//The DOM is the "live" version of that file that the browser creates in its memory
+
+// ==================== LOAD DOCUMENTS FROM API ====================
+
+async function loadDocuments() {
+    try {
+        const filiere = currentFilter === 'all' ? '' : currentFilter;
+        const docs    = await apiRequest(
+            `/documents/list.php?filiere=${filiere}&q=${currentQuery}`
+        );
+
+        // Adapter le format API au format attendu par generateCard()
+        resourcesData.all = docs.map(function(doc) {
+            return {
+                id:           doc.id,
+                title:        doc.title,
+                author:       '@' + doc.author_name.replace(/\s+/g, '_').toLowerCase(),
+                authorAvatar: '../assets/images/student avatar.jpg',
+                image:        '../assets/images/document.jpg',
+                badge:        doc.type === 'paid' ? 'Premium' : 'Free',
+                badgeClass:   doc.type === 'paid' ? 'badge-teal' : 'badge-blue',
+                fileType:     'PDF',
+                category:     doc.matiere,
+                action:       doc.type === 'paid' ? 'buy' : 'download',
+                price:        doc.price,
+                type:         doc.type
+            };
+        });
+
+        renderGrid();
+
+    } catch (err) {
+        showToast('Erreur de chargement : ' + err.message, 'error');
+        console.error(err);
+    }
+}
+
+// ==================== RENDER ====================
+
 function renderGrid() {
-    // apply category filter
     let results = resourcesData.all.filter(function(resource) {
-        if (currentFilter === 'all') return true;          // 'all' = keep everything
-        return resource.category === currentFilter;        // otherwise match category
+        if (currentFilter === 'all') return true;
+        return resource.category === currentFilter;
     });
-    // apply search query filter on top of category filter
-    //search in titile,author and file type
+
     if (currentQuery !== '') {
         results = results.filter(function(resource) {
             return (
-                resource.title.toLowerCase().includes(currentQuery)    ||
-                resource.author.toLowerCase().includes(currentQuery)   ||
+                resource.title.toLowerCase().includes(currentQuery)  ||
+                resource.author.toLowerCase().includes(currentQuery) ||
                 resource.fileType.toLowerCase().includes(currentQuery)
             );
         });
     }
 
-    // write the result to the DOM (.querySelector reads the live DOM)
-
     const cardsGrid = document.querySelector('.cards-grid');
-    if (!cardsGrid) return; //stop if the grid doesn't exist yet
+    if (!cardsGrid) return;
 
     if (results.length === 0) {
-        // Nothing survived both filters
         const msg = currentQuery
-            ? 'No results for "' + currentQuery + '"'   // search had no match
-            : 'No resources in this category yet.';     // filter had no match
-        //write in the DOM a message
+            ? 'No results for "' + currentQuery + '"'
+            : 'No resources in this category yet.';
         cardsGrid.innerHTML =
             '<div style="grid-column:1/-1;text-align:center;padding:3rem;">' +
                 '<span class="material-symbols-outlined" ' +
@@ -95,22 +92,19 @@ function renderGrid() {
                 '<p style="margin-top:1rem;color:var(--on-surface-variant);">' + msg + '</p>' +
             '</div>';
     } else {
-       // REMPLACE le contenu HTML par les nouvelles cartes générées(.innerHTML)
-        //you can use .appendChild() to ADD elements one by one at the end of existing content
-        // .map() transforme chaque ressource en HTML en un tableau de chaines+ is the cleanest way to transform data into HTML visuals
-        //.join('') transforme ce tableau de chaines en une seule chaine HTML
         cardsGrid.innerHTML = results.map(generateCard).join('');
     }
 }
 
-// Fonction pour générer une carte HTML à partir d'une ressource
-// Prend un objet resource en paramètre et retourne une chaîne HTML
+// ==================== GENERATE CARD ====================
 
 function generateCard(resource) {
+    const iconMap = { download: 'download', view: 'visibility', buy: 'shopping_cart' };
+    const icon    = iconMap[resource.action] || 'download';
 
-    // Map action names to Material Symbol icon names (njmo nzido akther options lhnee)
-    const iconMap = { download:'download', view:'visibility' };
-    const icon = iconMap[resource.action] || 'download';//default icon if action is unknown
+    const priceTag = resource.type === 'paid'
+        ? '<span class="price-tag">' + parseFloat(resource.price).toFixed(2) + ' DT</span>'
+        : '<span class="price-tag free">Gratuit</span>';
 
     return (
         '<div class="resource-card" data-id="' + resource.id + '">' +
@@ -131,6 +125,7 @@ function generateCard(resource) {
 
             '<div class="card-footer">' +
                 '<span class="file-type">' + resource.fileType + '</span>' +
+                priceTag +
                 '<button class="action-btn" aria-label="' + resource.action + '" ' +
                         'onclick="handleAction(' + resource.id + ')">' +
                     '<span class="material-symbols-outlined">' + icon + '</span>' +
@@ -141,68 +136,54 @@ function generateCard(resource) {
     );
 }
 
+// ==================== FILTERS ====================
+
 function initFilters() {
-    //make the chips in a list
     const chips = document.querySelectorAll('.chip');
 
     chips.forEach(function(chip) {
         chip.addEventListener('click', function() {
-
-            // Read the filter value from the chip's data-filter attribute (e.g. "exam", "document", etc.)
             const filter = chip.getAttribute('data-filter') || 'all';
 
-            // Update shared state
             currentFilter = filter;
-            // Update chip highlight
             chips.forEach(function(c) { c.classList.remove('chip-active'); });
             chip.classList.add('chip-active');
 
-            //update the grid based on the new filter
-            renderGrid();
+            // Recharger depuis l'API avec le nouveau filtre
+            loadDocuments();
         });
     });
 }
 
-// Fonction de recherche de ressources
+// ==================== SEARCH ====================
 
 function initSearch() {
-
     const searchInput = document.querySelector('.search-input');
     const searchBtn   = document.querySelector('.btn-find');
 
     function performSearch() {
         currentQuery = searchInput.value.toLowerCase().trim();
-        //update the grid based on the new searched query
-        renderGrid();
-        // small pop up message to show how many results were found or an error
-        if (currentQuery !== '') {
-           
-            const matchCount = resourcesData.all.filter(function(r) {
-                const categoryOk = (currentFilter === 'all') || (r.category === currentFilter);
-                const textOk =
-                    r.title.toLowerCase().includes(currentQuery)    ||
-                    r.author.toLowerCase().includes(currentQuery)   ||
-                    r.fileType.toLowerCase().includes(currentQuery);
-                return categoryOk && textOk;
-            }).length;
-
-            showToast(
-                matchCount > 0
-                    ? matchCount + ' result(s) found'
-                    : 'No results for "' + currentQuery + '"',
-                matchCount > 0 ? 'success' : 'info'
-            );
-        }
+        // Recharger depuis l'API avec la nouvelle query
+        loadDocuments().then(function() {
+            if (currentQuery !== '') {
+                const matchCount = resourcesData.all.length;
+                showToast(
+                    matchCount > 0
+                        ? matchCount + ' result(s) found'
+                        : 'No results for "' + currentQuery + '"',
+                    matchCount > 0 ? 'success' : 'info'
+                );
+            }
+        });
     }
-    //reset the search if the user clears the input
+
     if (searchInput) {
         searchInput.addEventListener('input', function() {
             if (searchInput.value === '') {
                 currentQuery = '';
-                renderGrid();
+                loadDocuments();
             }
         });
-        //allow searching by pressing enter key
         searchInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') performSearch();
         });
@@ -213,28 +194,61 @@ function initSearch() {
         searchBtn.addEventListener('click', performSearch);
     }
 }
-// actions handler for cards buttons (download,view..)
-function handleAction(resourceId) {
-    // Find the resource by id in the master array
+
+// ==================== HANDLE ACTION ====================
+
+async function handleAction(resourceId) {
     const resource = resourcesData.all.find(function(r) { return r.id === resourceId; });
     if (!resource) return;
 
-    const messages = {
-        download: 'Download started for "' + resource.title + '"',
-        view:     'Opening "' + resource.title + '"',
-    };
+    // Vérifier si connecté
+    const token = localStorage.getItem('token');
+    if (!token) {
+        showToast('Connectez-vous pour continuer', 'error');
+        setTimeout(function() { window.location.href = 'auth.html'; }, 1500);
+        return;
+    }
 
-    showToast(messages[resource.action] || 'Action triggered', 'success');
-    console.log(resource.action + ':', resource);
+    if (resource.action === 'download') {
+        // Téléchargement direct (document gratuit)
+        try {
+            showToast('Téléchargement en cours...', 'info');
+            const link    = document.createElement('a');
+            link.href     = API_BASE + '/documents/download.php?id=' + resource.id +
+                            '&token=' + token;
+            link.download = resource.title + '.pdf';
+            link.click();
+            showToast('Téléchargement démarré : "' + resource.title + '"', 'success');
+        } catch (err) {
+            showToast('Erreur : ' + err.message, 'error');
+        }
+
+    } else if (resource.action === 'buy') {
+        // Achat d'un document payant
+        try {
+            showToast('Traitement du paiement...', 'info');
+            const result = await apiRequest('/payments/initiate.php', 'POST', {
+                document_id: resource.id
+            });
+            // Ici rediriger vers la passerelle de paiement
+            // Pour l'instant on simule la validation
+            await apiRequest('/payments/verify.php', 'POST', {
+                purchase_id: result.purchase_id
+            });
+            showToast('Paiement validé ! Téléchargement débloqué.', 'success');
+            // Recharger pour mettre à jour le bouton
+            loadDocuments();
+        } catch (err) {
+            showToast('Erreur paiement : ' + err.message, 'error');
+        }
+    }
 }
 
-//the temporary pop up message
+// ==================== TOAST ====================
 
 function showToast(message, type) {
-
     type = type || 'info';
 
-    // Remove any existing toast to avoid stacking
     document.querySelectorAll('.custom-toast').forEach(function(t) { t.remove(); });
 
     const toast = document.createElement('div');
@@ -256,12 +270,13 @@ function showToast(message, type) {
 
     document.body.appendChild(toast);
 
-    // Auto-remove after 3 seconds:nested timer to first prepare the leave animation
     setTimeout(function() {
         toast.style.animation = 'slideOutRight 0.3s ease';
         setTimeout(function() { toast.remove(); }, 300);
     }, 3000);
 }
+
+// ==================== ANIMATIONS ====================
 
 const dynamicStyle = document.createElement('style');
 dynamicStyle.textContent =
@@ -269,31 +284,28 @@ dynamicStyle.textContent =
     '@keyframes slideOutRight{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}' +
     '@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}' +
     '.chip{cursor:pointer;transition:all 0.2s ease;}' +
-    '.resource-card{animation:fadeIn 0.4s ease;}';
+    '.resource-card{animation:fadeIn 0.4s ease;}' +
+    '.price-tag{font-size:0.8rem;font-weight:700;color:#1D9E75;background:#E1F5EE;padding:2px 8px;border-radius:8px;}' +
+    '.price-tag.free{color:#3d57bb;background:#eef0fb;}';
 document.head.appendChild(dynamicStyle);
 
+// ==================== NOTIFICATIONS ====================
 
-// NOTIFICATIONS SYSTEM
+let notifications = [];
 
-let notifications = [
-    { id:1, title:"New Resource Available!", message:"C++ Advanced Memory Management guide has been added.", time:"5 min ago", read:false, icon:"description" },
-    { id:2, title:"Your upload was approved", message:"Network Layers Flashcards is now public.", time:"1 hr ago", read:false, icon:"check_circle" },
-    { id:3, title:"Weekly digest", message:"12 new resources were added this week.", time:"2 days ago", read:true, icon:"mail" }
-];
-// Saves it in the browser's permanent storage
 function saveNotifications() {
     localStorage.setItem('notifications', JSON.stringify(notifications));
 }
-// Retrieves the notification string from storage and converts it back into a JavaScript array
+
 function loadNotifications() {
     const saved = localStorage.getItem('notifications');
     if (saved) notifications = JSON.parse(saved);
 }
-// Uses the filter method to count how many notification objects have the 'read' property set to false
+
 function getUnreadCount() {
     return notifications.filter(n => !n.read).length;
 }
-// Handles the visual red circle (badge) on the bell icon
+
 function updateNotificationBadge() {
     const iconBtn = document.querySelector('.icon-btn');
     if (!iconBtn) return;
@@ -302,7 +314,7 @@ function updateNotificationBadge() {
     const count = getUnreadCount();
     if (count > 0) {
         const badge = document.createElement('span');
-        badge.className = 'notification-badge';
+        badge.className  = 'notification-badge';
         badge.textContent = count > 9 ? '9+' : count;
         badge.style.cssText = `
             position:absolute; top:-4px; right:-4px; background:#f76a80; color:white;
@@ -313,7 +325,7 @@ function updateNotificationBadge() {
         iconBtn.appendChild(badge);
     }
 }
-// Creates the hidden side-menu structure in the HTML
+
 function createNotificationPanel() {
     if (document.querySelector('.notification-panel')) return;
 
@@ -329,14 +341,13 @@ function createNotificationPanel() {
             <button class="mark-all-read">Mark all as read</button>
         </div>
     `;
-
     document.body.appendChild(panel);
-    // Overlay
+
     const overlay = document.createElement('div');
     overlay.className = 'notification-overlay';
     document.body.appendChild(overlay);
 }
-// Refreshes the actual list of notifications inside the side panel
+
 function renderNotifications() {
     const list = document.querySelector('.notifications-list');
     if (!list) return;
@@ -358,28 +369,24 @@ function renderNotifications() {
         </div>
     `).join('');
 }
-// Makes the panel visible to the user
+
 function openNotificationPanel() {
-    const panel = document.querySelector('.notification-panel');
+    const panel   = document.querySelector('.notification-panel');
     const overlay = document.querySelector('.notification-overlay');
     if (!panel) return;
-
     renderNotifications();
-    panel.style.right = '0';
-    overlay.style.opacity = '1';
+    panel.style.right          = '0';
+    overlay.style.opacity      = '1';
     overlay.style.pointerEvents = 'auto';
 }
-// Hides the panel from the user
+
 function closeNotificationPanel() {
-    const panel = document.querySelector('.notification-panel');
+    const panel   = document.querySelector('.notification-panel');
     const overlay = document.querySelector('.notification-overlay');
-    if (panel) panel.style.right = '-360px';
-    if (overlay) {
-        overlay.style.opacity = '0';
-        overlay.style.pointerEvents = 'none';
-    }
+    if (panel)   panel.style.right          = '-360px';
+    if (overlay) { overlay.style.opacity = '0'; overlay.style.pointerEvents = 'none'; }
 }
-// Finds a specific notification by ID and marks it as read
+
 function markAsRead(id) {
     const notif = notifications.find(n => n.id === id);
     if (notif) notif.read = true;
@@ -387,7 +394,7 @@ function markAsRead(id) {
     renderNotifications();
     updateNotificationBadge();
 }
-// Sets the read property to true for every single notification in the array
+
 function markAllAsRead() {
     notifications.forEach(n => n.read = true);
     saveNotifications();
@@ -395,17 +402,14 @@ function markAllAsRead() {
     updateNotificationBadge();
 }
 
-// ==================== INITIALIZATION ====================
-
 function initNotifications() {
     loadNotifications();
     createNotificationPanel();
     updateNotificationBadge();
 
     const bellBtn = document.querySelector('.icon-btn');
-    if (!bellBtn) return console.warn("Bell button not found");
+    if (!bellBtn) return console.warn('Bell button not found');
 
-    // Remove old listeners to prevent duplicates
     bellBtn.replaceWith(bellBtn.cloneNode(true));
     const newBellBtn = document.querySelector('.icon-btn');
 
@@ -419,7 +423,6 @@ function initNotifications() {
         }
     });
 
-    // Global click handlers
     document.addEventListener('click', (e) => {
         if (e.target.closest('.close-notifications')) closeNotificationPanel();
         if (e.target.closest('.mark-all-read')) markAllAsRead();
@@ -432,11 +435,18 @@ function initNotifications() {
     });
 }
 
-// Most important: initialize everything once the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', function() {
-    renderGrid();        // 1. draw all cards on first load
-    initFilters();       // 2. wire chip clicks
-    initSearch();        // 3. wire search input + Find button
-    initNotifications(); // 4. build notification panel + badge
-});
+// ==================== INIT ====================
 
+document.addEventListener('DOMContentLoaded', function() {
+    // Vérifier si l'utilisateur est connecté
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = 'auth.html';
+        return;
+    }
+
+    loadDocuments();     // 1. charger les documents depuis l'API
+    initFilters();       // 2. chips de filtrage
+    initSearch();        // 3. barre de recherche
+    initNotifications(); // 4. panneau de notifications
+});

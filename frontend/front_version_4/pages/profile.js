@@ -1,143 +1,324 @@
-/* ── Upload Modal ── */
+const API_BASE = '../backend/api';
+
+// ==================== API ====================
+
+async function apiRequest(endpoint, method = 'GET', body = null) {
+    const token = localStorage.getItem('token');
+    const options = {
+        method,
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': 'Bearer ' + token })
+        }
+    };
+    if (body) options.body = JSON.stringify(body);
+
+    const res  = await fetch(API_BASE + endpoint, options);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    return data.data;
+}
+
+// ==================== LOAD PROFILE ====================
+
+async function loadProfile() {
+    try {
+        const user = await apiRequest('/profile/get.php');
+
+        // Remplir les infos affichées
+        document.querySelectorAll('.hero-title-row h1').forEach(el => el.textContent = user.name);
+        document.querySelectorAll('.sidenav-profile h3').forEach(el => el.textContent = '@' + user.name.replace(/\s+/g, '_').toLowerCase());
+        document.querySelectorAll('.sidenav-profile p').forEach(el => el.textContent  = user.filiere + ' Major');
+        document.querySelectorAll('.hero-desc').forEach(el => el.textContent          = user.bio || 'Aucune bio renseignée.');
+
+        // Statistiques
+        const docsCountEl = document.querySelector('.stat-docs');
+        const purchCountEl = document.querySelector('.stat-purchases');
+        if (docsCountEl)  docsCountEl.textContent  = user.documents_count  || 0;
+        if (purchCountEl) purchCountEl.textContent  = user.purchases_count  || 0;
+
+        // Pré-remplir le formulaire d'édition
+        const editName    = document.getElementById('editName');
+        const editBio     = document.getElementById('editBio');
+        const editMajor   = document.getElementById('editMajor');
+
+        if (editName)  editName.value  = user.name    || '';
+        if (editBio)   editBio.value   = user.bio     || '';
+        if (editMajor) editMajor.value = user.filiere || '';
+
+        // Sauvegarder en localStorage
+        localStorage.setItem('user', JSON.stringify(user));
+
+    } catch (err) {
+        showToast('Erreur chargement profil : ' + err.message, 'error');
+    }
+}
+
+// ==================== LOAD PURCHASES HISTORY ====================
+
+async function loadPurchasesHistory() {
+    try {
+        const purchases = await apiRequest('/purchases/history.php');
+        const container = document.querySelector('.purchases-list');
+        if (!container) return;
+
+        if (purchases.length === 0) {
+            container.innerHTML = '<p style="color:#888;text-align:center;padding:2rem;">Aucun achat effectué.</p>';
+            return;
+        }
+
+        container.innerHTML = purchases.map(function(p) {
+            const date = new Date(p.created_at).toLocaleDateString('fr-FR');
+            return (
+                '<div class="purchase-item">' +
+                    '<div class="purchase-info">' +
+                        '<span class="material-symbols-outlined">description</span>' +
+                        '<div>' +
+                            '<h4>' + p.title + '</h4>' +
+                            '<span>' + p.filiere + ' · ' + p.matiere + ' · ' + date + '</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="purchase-right">' +
+                        '<span class="purchase-price">' + parseFloat(p.price).toFixed(2) + ' DT</span>' +
+                        '<a href="' + API_BASE + '/documents/download.php?id=' + p.document_id +
+                           '&token=' + localStorage.getItem('token') + '" ' +
+                           'class="btn-download" download>' +
+                            '<span class="material-symbols-outlined">download</span>' +
+                        '</a>' +
+                    '</div>' +
+                '</div>'
+            );
+        }).join('');
+
+    } catch (err) {
+        showToast('Erreur chargement historique : ' + err.message, 'error');
+    }
+}
+
+// ==================== SAVE PROFILE ====================
+
+async function saveProfile() {
+    const name    = document.getElementById('editName').value.trim();
+    const bio     = document.getElementById('editBio').value.trim();
+    const filiere = document.getElementById('editMajor').value;
+
+    if (!name) {
+        showToast('Le nom est obligatoire', 'error');
+        return;
+    }
+
+    try {
+        await apiRequest('/profile/update.php', 'POST', { name, bio, filiere });
+
+        // Mettre à jour le DOM immédiatement
+        document.querySelectorAll('.hero-title-row h1').forEach(el => el.textContent = name);
+        document.querySelectorAll('.sidenav-profile h3').forEach(el => el.textContent = '@' + name.replace(/\s+/g, '_').toLowerCase());
+        document.querySelectorAll('.sidenav-profile p').forEach(el => el.textContent  = filiere + ' Major');
+        document.querySelectorAll('.hero-desc').forEach(el => el.textContent          = bio || 'Aucune bio renseignée.');
+
+        // Mettre à jour localStorage
+        const user    = JSON.parse(localStorage.getItem('user') || '{}');
+        user.name     = name;
+        user.bio      = bio;
+        user.filiere  = filiere;
+        localStorage.setItem('user', JSON.stringify(user));
+
+        closeEditProfile();
+        showToast('Profil mis à jour avec succès !', 'success');
+
+    } catch (err) {
+        showToast('Erreur : ' + err.message, 'error');
+    }
+}
+
+// ==================== UPLOAD DOCUMENT ====================
+
+async function handleUpload(e) {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append('title',       document.getElementById('uploadTitle').value.trim());
+    formData.append('description', document.getElementById('uploadDescription').value.trim());
+    formData.append('filiere',     document.getElementById('uploadFiliere').value);
+    formData.append('matiere',     document.getElementById('uploadMatiere').value.trim());
+    formData.append('type',        document.getElementById('uploadType').value);
+    formData.append('price',       document.getElementById('uploadPrice').value || 0);
+
+    const fileInput = document.getElementById('uploadFile');
+    if (!fileInput || !fileInput.files[0]) {
+        showToast('Veuillez sélectionner un fichier PDF', 'error');
+        return;
+    }
+    formData.append('file', fileInput.files[0]);
+
+    const btn = document.getElementById('uploadBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Envoi en cours...'; }
+
+    try {
+        const token = localStorage.getItem('token');
+        const res   = await fetch(API_BASE + '/documents/upload.php', {
+            method:  'POST',
+            headers: { 'Authorization': 'Bearer ' + token },
+            body:    formData
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error);
+
+        closeModal();
+        showToast('Document publié avec succès !', 'success');
+
+        // Recharger l'historique si on est sur la page profil
+        loadPurchasesHistory();
+
+    } catch (err) {
+        showToast('Erreur upload : ' + err.message, 'error');
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Publier'; }
+    }
+}
+
+// ==================== MODAL UPLOAD ====================
+
 function openModal() {
-  document.getElementById('uploadModal').classList.add('open');
+    const modal = document.getElementById('uploadModal');
+    if (modal) {
+        delete modal.dataset.editId;
+        modal.classList.add('open');
+    }
 }
+
 function closeModal() {
-  document.getElementById('uploadModal').classList.remove('open');
+    const modal = document.getElementById('uploadModal');
+    if (modal) modal.classList.remove('open');
 }
+
 function handleOverlayClick(e) {
-  if (e.target === document.getElementById('uploadModal')) closeModal();
+    if (e.target === document.getElementById('uploadModal')) closeModal();
 }
 
-/* ── Edit Profile Page View ── */
+// ==================== EDIT PROFILE VIEW ====================
+
 function openEditProfile() {
-  document.getElementById('profileView').style.display = 'none';
-  const ep = document.getElementById('editProfileView');
-  ep.style.display = 'block';
-  ep.style.opacity = '0';
-  ep.style.transform = 'translateX(2rem)';
-  requestAnimationFrame(() => {
-    ep.style.transition = 'opacity 0.3s, transform 0.3s';
-    ep.style.opacity = '1';
-    ep.style.transform = 'translateX(0)';
-  });
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-function closeEditProfile() {
-  const ep = document.getElementById('editProfileView');
-  ep.style.transition = 'opacity 0.25s, transform 0.25s';
-  ep.style.opacity = '0';
-  ep.style.transform = 'translateX(2rem)';
-  setTimeout(() => {
-    ep.style.display = 'none';
-    document.getElementById('profileView').style.display = 'block';
+    document.getElementById('profileView').style.display = 'none';
+    const ep = document.getElementById('editProfileView');
+    ep.style.display   = 'block';
+    ep.style.opacity   = '0';
+    ep.style.transform = 'translateX(2rem)';
+    requestAnimationFrame(function() {
+        ep.style.transition = 'opacity 0.3s, transform 0.3s';
+        ep.style.opacity    = '1';
+        ep.style.transform  = 'translateX(0)';
+    });
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, 250);
 }
+
+function closeEditProfile() {
+    const ep = document.getElementById('editProfileView');
+    ep.style.transition = 'opacity 0.25s, transform 0.25s';
+    ep.style.opacity    = '0';
+    ep.style.transform  = 'translateX(2rem)';
+    setTimeout(function() {
+        ep.style.display = 'none';
+        document.getElementById('profileView').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 250);
+}
+
 function previewAvatar(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    document.getElementById('editAvatarPreview').src = ev.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-function saveProfile() {
-  const name     = document.getElementById('editName').value.trim();
-  const username = document.getElementById('editUsername').value.trim();
-  const bio      = document.getElementById('editBio').value.trim();
-  const github   = document.getElementById('editGithub').value.trim();
-  const major    = document.getElementById('editMajor').value;
-
-  if (name)     document.querySelector('.hero-title-row h1').textContent = name;
-  if (username) document.querySelector('.sidenav-profile h3').textContent = '@' + username.replace(/^@/, '');
-  if (bio)      document.querySelector('.hero-desc').textContent = bio;
-  if (major)    document.querySelector('.sidenav-profile p').textContent = major + ' Major';
-  if (github)   document.querySelector('.hero-links a span:last-child').textContent = github;
-
-  const avatarSrc = document.getElementById('editAvatarPreview').src;
-  document.querySelectorAll('.hero-avatar img, .sidenav-profile .avatar-md img, .topnav-right .avatar-sm img')
-    .forEach(img => img.src = avatarSrc);
-
-  closeEditProfile();
-  setTimeout(() => showToast('Profile updated successfully!', 'check_circle', 'var(--secondary)'), 300);
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader    = new FileReader();
+    reader.onload   = function(ev) {
+        document.getElementById('editAvatarPreview').src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
 }
 
-/* ── Logout Modal ── */
+// ==================== LOGOUT ====================
+
 function confirmLogout(e) {
-  e.preventDefault();
-  document.getElementById('logoutModal').classList.add('open');
+    e.preventDefault();
+    document.getElementById('logoutModal').classList.add('open');
 }
+
 function closeLogout() {
-  document.getElementById('logoutModal').classList.remove('open');
+    document.getElementById('logoutModal').classList.remove('open');
 }
+
 function handleLogoutOverlayClick(e) {
-  if (e.target === document.getElementById('logoutModal')) closeLogout();
+    if (e.target === document.getElementById('logoutModal')) closeLogout();
 }
+
 function doLogout() {
-  closeLogout();
-  showToast('Logging you out…', 'logout', 'var(--error)');
-  setTimeout(() => {
-    window.location.href = 'index.html';
-  }, 1500);
+    closeLogout();
+    showToast('Déconnexion en cours...', 'info');
+    setTimeout(function() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = 'auth.html';
+    }, 1200);
 }
 
-/* ── Sold Modal ── */
-function openSoldModal() {
-  document.getElementById('soldModal').classList.add('open');
+// ==================== TOAST ====================
+
+function showToast(message, type) {
+    type = type || 'info';
+    const existing = document.getElementById('gc-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id    = 'gc-toast';
+
+    const icon  = type === 'success' ? 'check_circle' : type === 'error' ? 'error' : 'info';
+    const color = type === 'success' ? 'var(--secondary)' : type === 'error' ? 'var(--error)' : '#3d57bb';
+
+    toast.style.cssText = `
+        position:fixed; bottom:5.5rem; left:50%; transform:translateX(-50%) translateY(1rem);
+        background:#fff; border:1px solid var(--surface-container-high);
+        box-shadow:0 8px 30px rgba(39,48,87,0.15); border-radius:var(--radius-full);
+        padding:0.75rem 1.5rem; display:flex; align-items:center; gap:0.5rem;
+        font-weight:600; font-size:0.875rem; color:var(--on-surface);
+        z-index:9999; opacity:0; transition:opacity 0.3s, transform 0.3s;
+        white-space:nowrap;
+    `;
+    toast.innerHTML =
+        '<span class="material-symbols-outlined" style="color:' + color + ';font-size:1.2rem;">' + icon + '</span>' +
+        message;
+
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(function() {
+        toast.style.opacity   = '1';
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+    });
+
+    setTimeout(function() {
+        toast.style.opacity   = '0';
+        toast.style.transform = 'translateX(-50%) translateY(1rem)';
+        setTimeout(function() { toast.remove(); }, 400);
+    }, 3000);
 }
-function closeSoldModal() {
-  document.getElementById('soldModal').classList.remove('open');
-}
-function handleSoldOverlayClick(e) {
-  if (e.target === document.getElementById('soldModal')) closeSoldModal();
-}
-function logSale() {
-  const amount = parseInt(document.getElementById('soldPrice').value);
-  if (!amount || amount < 1) {
-    showToast('Please enter a valid number.', 'warning', 'var(--error)');
-    return;
-  }
 
-  const sidebar = document.getElementById('soldCount');
-  const stat    = document.getElementById('soldCountStat');
-  const current = parseInt(sidebar.textContent);
-  sidebar.textContent = current + amount;
-  stat.textContent    = current + amount;
+// ==================== INIT ====================
 
-  document.getElementById('soldPrice').value = '';
+document.addEventListener('DOMContentLoaded', function() {
+    if (!localStorage.getItem('token')) {
+        window.location.href = 'auth.html';
+        return;
+    }
 
-  closeSoldModal();
-  showToast('Sale logged successfully!', 'check_circle', 'var(--secondary)');
-}
+    loadProfile();
+    loadPurchasesHistory();
 
-/* ── Toast helper ── */
-function showToast(message, icon, color) {
-  const existing = document.getElementById('gc-toast');
-  if (existing) existing.remove();
+    const uploadForm = document.getElementById('uploadForm');
+    if (uploadForm) uploadForm.addEventListener('submit', handleUpload);
 
-  const toast = document.createElement('div');
-  toast.id = 'gc-toast';
-  toast.style.cssText = `
-    position:fixed; bottom:5.5rem; left:50%; transform:translateX(-50%) translateY(1rem);
-    background:#fff; border:1px solid var(--surface-container-high);
-    box-shadow:0 8px 30px rgba(39,48,87,0.15); border-radius:var(--radius-full);
-    padding:0.75rem 1.5rem; display:flex; align-items:center; gap:0.5rem;
-    font-weight:600; font-size:0.875rem; color:var(--on-surface);
-    z-index:9999; opacity:0; transition:opacity 0.3s, transform 0.3s;
-    white-space:nowrap;
-  `;
-  toast.innerHTML = `<span class="material-symbols-outlined" style="color:${color};font-size:1.2rem;">${icon}</span>${message}`;
-  document.body.appendChild(toast);
-
-  requestAnimationFrame(() => {
-    toast.style.opacity = '1';
-    toast.style.transform = 'translateX(-50%) translateY(0)';
-  });
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transform = 'translateX(-50%) translateY(1rem)';
-    setTimeout(() => toast.remove(), 400);
-  }, 3000);
-}
+    // Afficher/masquer le champ prix selon le type
+    const uploadType  = document.getElementById('uploadType');
+    const priceWrapper = document.getElementById('priceWrapper');
+    if (uploadType && priceWrapper) {
+        uploadType.addEventListener('change', function() {
+            priceWrapper.style.display = uploadType.value === 'paid' ? 'block' : 'none';
+        });
+    }
+});
