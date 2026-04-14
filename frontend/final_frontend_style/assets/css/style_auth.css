@@ -1,0 +1,733 @@
+/* ── CSS VARIABLES ───────────────────────────────────────── */
+:root {
+  --primary: #3d57bb;
+  --primary-dim: #2f4bae;
+  --primary-container: #b0beff;
+  --tertiary: #7f43ab;
+  --tertiary-dim: #72359d;
+  --tertiary-container: #daa3ff;
+  --secondary-container: #9bfde9;
+  --surface: #fbf8ff;
+  --surface-container: #ececff;
+  --surface-container-low: #f3f2ff;
+  --surface-container-high: #e4e7ff;
+  --surface-container-highest: #dde1ff;
+  --surface-lowest: #ffffff;
+  --on-surface: #273057;
+  --on-surface-variant: #545d86;
+  --on-primary: #faf8ff;
+  --outline: #6f79a4;
+  --outline-variant: #a7b0de;
+  --font-headline: "Plus Jakarta Sans", sans-serif;
+  --font-body: "Be Vietnam Pro", sans-serif;
+  --radius-sm: 0.5rem;
+  --radius-md: 1rem;
+  --radius-lg: 2rem;
+  --radius-xl: 3rem;
+  --radius-full: 9999px;
+
+  /* Transition timing used everywhere */
+  --transition-swap: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── RESET ───────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+a {
+  text-decoration: none;
+}
+img {
+  display: block;
+  max-width: 100%;
+}
+button {
+  cursor: pointer;
+  border: none;
+  font-family: var(--font-headline);
+}
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+  vertical-align: middle;
+}
+::selection {
+  background: var(--primary-container);
+  color: #0f3297;
+}
+
+/* ── INLINE FORM ALERT ─────────────────────────────────── */
+.form-alert {
+  min-height: 1.1rem;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ac3149;
+}
+.form-alert.success {
+  color: #006b5e;
+}
+
+/* ── BODY ────────────────────────────────────────────────── */
+body {
+  font-family: var(--font-body);
+  color: var(--on-surface);
+  min-height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--surface);
+}
+
+/* ── HEADER ──────────────────────────────────────────────── */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(251, 248, 255, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(61, 87, 187, 0.08);
+  box-shadow: 0 1px 0 rgba(39, 48, 87, 0.04);
+}
+
+.nav-bar {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-full);
+  background: linear-gradient(
+    135deg,
+    rgba(176, 190, 255, 0.34),
+    rgba(255, 255, 255, 0.7)
+  );
+  border: 1px solid rgba(61, 87, 187, 0.08);
+  box-shadow: 0 8px 20px rgba(61, 87, 187, 0.08);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.logo:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(61, 87, 187, 0.14);
+  background: linear-gradient(
+    135deg,
+    rgba(176, 190, 255, 0.45),
+    rgba(255, 255, 255, 0.82)
+  );
+}
+
+.logo__brand {
+  font-family: var(--font-headline);
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.logo__hint {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--on-surface-variant);
+  line-height: 1;
+}
+
+/* ── BACKGROUND ──────────────────────────────────────────── */
+.bg-layer {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.bg-mesh {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(at 0% 0%, #ececff 0px, transparent 50%),
+    radial-gradient(at 100% 0%, #9bfde9 0px, transparent 50%),
+    radial-gradient(at 100% 100%, #daa3ff 0px, transparent 50%),
+    radial-gradient(at 0% 100%, #b0beff 0px, transparent 50%);
+  filter: blur(80px);
+  opacity: 0.4;
+}
+.shape {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: var(--radius-full);
+  pointer-events: none;
+}
+.shape--top-left {
+  width: 16rem;
+  height: 16rem;
+  top: -10%;
+  left: -5%;
+}
+.shape--bottom-right {
+  width: 24rem;
+  height: 24rem;
+  bottom: -20%;
+  right: -10%;
+}
+
+/* ── PAGE MAIN ───────────────────────────────────────────── */
+.page-main {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.5rem 3rem;
+  position: relative;
+  z-index: 10;
+}
+
+/* ── AUTH WRAPPER ────────────────────────────────────────── */
+/*
+  This is the two-column container.
+  - LOGIN  mode: [brand-panel LEFT] [card-panel RIGHT]
+  - SIGNUP mode: [card-panel LEFT]  [brand-panel RIGHT]
+  flex-direction swap + CSS transitions handle the animation.
+*/
+.auth-wrapper {
+  width: 100%;
+  max-width: 72rem;
+  display: flex;
+  align-items: center;
+  gap: 4rem;
+  /* transition the layout direction swap */
+  transition: flex-direction var(--transition-swap);
+}
+
+/* SIGNUP: reverse the row so card moves to left, text to right */
+[data-mode="signup"] .auth-wrapper,
+.auth-wrapper[data-mode="signup"] {
+  flex-direction: row-reverse;
+}
+
+/* ── BRAND PANEL ─────────────────────────────────────────── */
+.brand-panel {
+  flex: 1;
+  display: none; /* hidden on mobile */
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+}
+
+@media (min-width: 1024px) {
+  .brand-panel {
+    display: flex;
+  }
+}
+
+/* Both brand content blocks sit in the same space.
+   Only one is visible at a time — controlled by data-mode. */
+.brand-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition:
+    opacity var(--transition-swap),
+    transform var(--transition-swap);
+}
+
+/* LOGIN brand content */
+.brand-content--login {
+  opacity: 1;
+  transform: translateX(0);
+}
+.brand-content--signup {
+  opacity: 0;
+  transform: translateX(-24px);
+  pointer-events: none;
+  position: absolute; /* stack on top of login content */
+  top: 0;
+  left: 0;
+}
+
+/* When mode is signup: swap visibility */
+[data-mode="signup"] .brand-content--login {
+  opacity: 0;
+  transform: translateX(24px);
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+[data-mode="signup"] .brand-content--signup {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: all;
+  position: relative;
+}
+
+/* Login brand text */
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 1rem;
+  border-radius: var(--radius-full);
+  background: rgba(127, 67, 171, 0.1);
+  color: var(--tertiary);
+  font-family: var(--font-headline);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  width: fit-content;
+}
+.brand-logo {
+  font-family: var(--font-headline);
+  font-size: clamp(3rem, 5vw, 4rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  color: var(--on-surface);
+}
+.brand-logo__accent {
+  color: var(--primary);
+}
+
+.brand-description {
+  font-size: 1.25rem;
+  color: var(--on-surface-variant);
+  max-width: 28rem;
+  line-height: 1.6;
+}
+
+/* Signup brand text */
+.brand-heading {
+  font-family: var(--font-headline);
+  font-size: clamp(3.5rem, 6vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  color: var(--on-surface);
+}
+.brand-heading__accent {
+  color: var(--primary);
+}
+
+.brand-desc {
+  font-size: 1.25rem;
+  color: var(--on-surface-variant);
+  max-width: 28rem;
+  line-height: 1.6;
+}
+
+/* ── CARD PANEL ──────────────────────────────────────────── */
+.card-panel {
+  position: relative;
+  /* Fixed width so the card never resizes during the swap */
+  width: 100%;
+  max-width: 30rem;
+  flex-shrink: 0;
+}
+
+.card-glow {
+  position: absolute;
+  inset: -4px;
+  background: linear-gradient(
+    135deg,
+    var(--primary-container),
+    var(--tertiary-container)
+  );
+  border-radius: var(--radius-lg);
+  filter: blur(16px);
+  opacity: 0.25;
+  z-index: -1;
+  transition: opacity 0.5s;
+}
+.card-panel:hover .card-glow {
+  opacity: 0.4;
+}
+
+/* ── AUTH CARD ───────────────────────────────────────────── */
+/*
+  The card has a fixed min-height so it never resizes when
+  switching between login (3 fields) and signup (5 fields).
+  Both forms are stacked inside; only one is visible at a time.
+*/
+.auth-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(167, 176, 222, 0.1);
+  box-shadow: 0 20px 60px rgba(39, 48, 87, 0.1);
+  /* Fixed height — this is what keeps both forms the same size */
+  min-height: 580px;
+  overflow: hidden;
+}
+
+/* ── AUTH FORMS ──────────────────────────────────────────── */
+/*
+  Both forms are absolutely positioned on top of each other.
+  The active one slides in; the inactive one slides out.
+*/
+.auth-form {
+  position: absolute;
+  inset: 0;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow-y: auto;
+  transition:
+    opacity var(--transition-swap),
+    transform var(--transition-swap);
+}
+
+/* LOGIN form: visible by default */
+#loginForm {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: all;
+  z-index: 2;
+}
+/* SIGNUP form: hidden by default, shifted right */
+#signupForm {
+  opacity: 0;
+  transform: translateX(40px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* When mode switches to signup */
+[data-mode="signup"] #loginForm {
+  opacity: 0;
+  transform: translateX(-40px);
+  pointer-events: none;
+  z-index: 1;
+}
+[data-mode="signup"] #signupForm {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: all;
+  z-index: 2;
+}
+
+/* ── CARD HEADER ─────────────────────────────────────────── */
+.card-header {
+  margin-bottom: 1.75rem;
+}
+.card-title {
+  font-family: var(--font-headline);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--on-surface);
+  letter-spacing: -0.02em;
+}
+.card-subtitle {
+  color: var(--on-surface-variant);
+  margin-top: 0.25rem;
+  font-size: 0.95rem;
+}
+
+/* ── FORM FIELDS ─────────────────────────────────────────── */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field__label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--on-surface-variant);
+  margin-left: 0.25rem;
+}
+
+.field__label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.25rem;
+}
+
+.field__forgot {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primary);
+  transition: color 0.2s;
+}
+.field__forgot:hover {
+  color: var(--primary-dim);
+}
+
+.field__wrap {
+  position: relative;
+}
+
+.field__toggle {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--outline);
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+.field__toggle:hover {
+  background: var(--surface-container-high);
+  color: var(--primary);
+}
+
+.field__input--pw {
+  padding-right: 3rem;
+}
+
+.field__icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--outline);
+  font-size: 1.125rem;
+  pointer-events: none;
+  transition: color 0.2s;
+}
+.field__wrap:focus-within .field__icon {
+  color: var(--primary);
+}
+
+.field__input {
+  width: 100%;
+  padding: 0.875rem 1rem 0.875rem 3rem;
+  background: var(--surface-container);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--on-surface);
+  outline: none;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s;
+}
+.field__input:focus {
+  box-shadow: 0 0 0 2px var(--primary-container);
+  background: var(--surface-container-highest);
+}
+.field__input::placeholder {
+  color: var(--outline);
+}
+
+.field__select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+.field__select-arrow {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--outline);
+  pointer-events: none;
+}
+.field__input--upper {
+  text-transform: uppercase;
+}
+
+/* ── SUBMIT BUTTON ───────────────────────────────────────── */
+.btn-submit {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dim));
+  color: var(--on-primary);
+  font-size: 1.125rem;
+  font-weight: 700;
+  box-shadow: 0 4px 20px rgba(61, 87, 187, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+.btn-submit:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 30px rgba(61, 87, 187, 0.3);
+}
+.btn-submit:active {
+  transform: scale(0.95);
+}
+
+.btn-submit__icon {
+  transition: transform 0.2s;
+}
+.btn-submit:hover .btn-submit__icon {
+  transform: translateX(4px);
+}
+
+/* ── SWITCH LINK (Don't have an account? / Already a member?) ── */
+.card-switch-link {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--on-surface-variant);
+}
+.card-switch-link__a {
+  color: var(--primary);
+  font-weight: 700;
+  transition: text-decoration 0.2s;
+}
+.card-switch-link__a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 2px;
+}
+
+/* ── QUOTE BLOCKS ────────────────────────────────────────── */
+.meme-quote {
+  margin-top: 1.25rem;
+  text-align: center;
+  padding: 0 0.5rem;
+}
+.meme-quote__text {
+  font-size: 0.72rem;
+  color: var(--on-surface-variant);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+/* Reset password block */
+.reset-block {
+  width: 100%;
+}
+
+.quote-block {
+  margin-top: 1.25rem;
+  padding: 0.875rem;
+  background: var(--surface-container-low);
+  border-radius: var(--radius-md);
+  font-style: italic;
+  font-size: 0.72rem;
+  color: var(--on-surface-variant);
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  line-height: 1.6;
+}
+.quote-block__icon {
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+  color: var(--tertiary-dim);
+  font-size: 1.125rem;
+  flex-shrink: 0;
+}
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+.site-footer {
+  padding: 2rem;
+  position: relative;
+  z-index: 10;
+}
+.footer-inner {
+  max-width: 80rem;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.footer__copy {
+  font-size: 0.75rem;
+  color: rgba(84, 93, 134, 0.7);
+  font-weight: 500;
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width: 1023px) {
+  .auth-wrapper {
+    flex-direction: column !important; /* override swap on mobile */
+    max-width: 30rem;
+    margin: 0 auto;
+  }
+  .card-panel {
+    max-width: 100%;
+  }
+  /* On mobile, stack vertically — no side-by-side swap needed */
+  [data-mode="signup"] .auth-wrapper {
+    flex-direction: column !important;
+  }
+
+  .nav-bar {
+    padding: 0.875rem 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .page-main {
+    padding: 3rem 1rem 2rem;
+  }
+
+  .logo {
+    padding: 0.5rem 0.85rem;
+  }
+
+  .logo__brand {
+    font-size: 1.05rem;
+  }
+
+  .logo__hint {
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+  }
+}
