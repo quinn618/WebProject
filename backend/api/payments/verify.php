@@ -5,34 +5,65 @@ require_once '../../middleware/auth.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
-    echo json_encode(['success' => false, 'error' => 'Méthode non autorisée']);
+    echo json_encode(['success' => false, 'message' => 'Méthode non autorisée']);
     exit;
 }
 
 $userId     = verifyToken();
 $data       = json_decode(file_get_contents('php://input'), true);
-$purchaseId = intval($data['purchase_id'] ?? 0);
+$paymentRef = trim($data['payment_ref'] ?? '');
+$docId      = intval($data['document_id'] ?? 0);
 
-if (!$purchaseId) {
-    echo json_encode(['success' => false, 'error' => 'ID achat manquant']);
+if (!$paymentRef) {
+    echo json_encode(['success' => false, 'message' => 'Référence de paiement manquante']);
     exit;
 }
 
-$stmt = $pdo->prepare('SELECT * FROM purchases WHERE id = ? AND user_id = ?');
-$stmt->execute([$purchaseId, $userId]);
-$purchase = $stmt->fetch();
-
-if (!$purchase) {
-    echo json_encode(['success' => false, 'error' => 'Achat introuvable']);
+if (!str_starts_with($paymentRef, 'txn:')) {
+    echo json_encode(['success' => false, 'message' => 'Référence de paiement invalide']);
     exit;
 }
 
-// Ici : vérifier le paiement auprès de la passerelle (Stripe/Flouci)
-// Pour la démo on valide directement
-$stmt = $pdo->prepare('UPDATE purchases SET status = "completed" WHERE id = ?');
-$stmt->execute([$purchaseId]);
+$txnId = (int)substr($paymentRef, 4);
+if ($txnId <= 0) {
+    echo json_encode(['success' => false, 'message' => 'Référence de paiement invalide']);
+    exit;
+}
+
+$stmt = $pdo->prepare('SELECT * FROM transactions WHERE id = ? AND utilisateur_id = ? LIMIT 1');
+$stmt->execute([$txnId, $userId]);
+$txn = $stmt->fetch();
+if (!$txn) {
+    echo json_encode(['success' => false, 'message' => 'Transaction introuvable']);
+    exit;
+}
+
+$documentId = (int)($txn['document_id'] ?? $docId);
+
+// Demo: mark as complete
+$stmt = $pdo->prepare('UPDATE transactions SET statut = "complete" WHERE id = ?');
+$stmt->execute([$txnId]);
+
+if ($documentId > 0) {
+    $stmt = $pdo->prepare('INSERT INTO utilisateur_documents (utilisateur_id, document_id, type_acces) VALUES (?, ?, "achete")');
+    $stmt->execute([$userId, $documentId]);
+    
+    // Get the seller (document author) and increment their sold_count
+    $stmt = $pdo->prepare('SELECT utilisateur_id FROM documents WHERE id = ?');
+    $stmt->execute([$documentId]);
+    $docRow = $stmt->fetch();
+    
+    if ($docRow) {
+        $sellerId = (int)$docRow['utilisateur_id'];
+        // Increment seller's sold_count and aura_points
+        $stmt = $pdo->prepare('UPDATE utilisateurs SET sold_count = sold_count + 1, aura_points = aura_points + 15 WHERE id = ?');
+        $stmt->execute([$sellerId]);
+    }
+}
 
 echo json_encode([
-    'success' => true,
-    'data'    => ['message' => 'Paiement validé, téléchargement débloqué']
+    'success'  => true,
+    'verified' => true,
+    'message'  => 'Paiement validé (mode démo)',
+    'purchase' => $documentId > 0 ? ['document_id' => $documentId] : null,
 ]);
