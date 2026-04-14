@@ -56,11 +56,11 @@ const DocumentsAPI = (() => {
   async function list(filters = {}) {
     const params = new URLSearchParams();
     if (filters.category) params.set("category", filters.category);
-    if (filters.query)    params.set("q",        filters.query);
-    if (filters.filiere)  params.set("filiere",  filters.filiere);
-    if (filters.matiere)  params.set("matiere",  filters.matiere);
-    if (filters.page)     params.set("page",     filters.page);
-    if (filters.limit)    params.set("limit",    filters.limit);
+    if (filters.query) params.set("q", filters.query);
+    if (filters.filiere) params.set("filiere", filters.filiere);
+    if (filters.matiere) params.set("matiere", filters.matiere);
+    if (filters.page) params.set("page", filters.page);
+    if (filters.limit) params.set("limit", filters.limit);
 
     const qs = params.toString();
     return apiFetch(`/documents/list.php${qs ? "?" + qs : ""}`);
@@ -137,12 +137,26 @@ const DocumentsAPI = (() => {
    * Usage: open the returned URL in a new tab to trigger the browser download.
    */
   async function download(id) {
-    return apiFetch(
-      `/documents/download.php?id=${encodeURIComponent(id)}`
-    );
+    return apiFetch(`/documents/download.php?id=${encodeURIComponent(id)}`);
   }
 
-  return { list, detail, upload, download };
+  /**
+   * POST /documents/delete.php
+   * Delete a document (only the owner can delete).
+   *
+   * @param {number|string} id – Document ID
+   *
+   * Expected response:
+   *   { success: true, message: string }
+   */
+  async function deleteDocument(id) {
+    return apiFetch(`/documents/delete.php`, {
+      method: "POST",
+      body: JSON.stringify({ id: parseInt(id) }),
+    });
+  }
+
+  return { list, detail, upload, download, deleteDocument };
 })();
 
 window.GC.DocumentsAPI = DocumentsAPI;

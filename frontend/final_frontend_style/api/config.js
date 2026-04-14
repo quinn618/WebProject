@@ -5,7 +5,7 @@
  */
 
 const API_CONFIG = {
-  BASE_URL: "https://your-backend-domain.com/backend/api", // ← update this
+  BASE_URL: "http://localhost/Ghassra/backend/api",
   TIMEOUT_MS: 10_000,
 };
 
@@ -60,10 +60,7 @@ async function apiFetch(path, opts = {}) {
   };
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(
-    () => controller.abort(),
-    API_CONFIG.TIMEOUT_MS
-  );
+  const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.TIMEOUT_MS);
 
   try {
     const response = await fetch(url, {

@@ -16,8 +16,14 @@
     />
     <link rel="stylesheet" href="../assets/css/profile.css" />
     <link rel="stylesheet" href="../assets/css/shared.css" />
-    <script src="../assets/js/profile.js" defer></script>
+    <script src="../api/config.js" defer></script>
+    <script src="../api/auth.api.js" defer></script>
+    <script src="../api/documents.api.js" defer></script>
+    <script src="../api/payments.api.js" defer></script>
+    <script src="../api/profile.api.js" defer></script>
+    <script src="../api/purchases.api.js" defer></script>
     <script src="../assets/js/shared.js" defer></script>
+    <script src="../assets/js/profile.js" defer></script>
   </head>
   <body>
     <!-- TopNavBar -->
@@ -160,33 +166,33 @@
 
         <!-- Stats Grid -->
         <section class="stats-grid">
-          <div class="stat-card">
+          <div class="stat-card" data-stat="documents">
             <div class="stat-icon primary">
               <span class="material-symbols-outlined">description</span>
             </div>
-            <h4>12</h4>
+            <h4>0</h4>
             <p class="stat-label">Notes Uploaded</p>
           </div>
-          <div class="stat-card">
+          <div class="stat-card" data-stat="sold">
             <div class="stat-icon secondary">
               <span class="material-symbols-outlined">download</span>
             </div>
-            <h4>1.4k</h4>
-            <p class="stat-label">Total Downloads</p>
+            <h4>0</h4>
+            <p class="stat-label">Total Sold</p>
           </div>
-          <div class="stat-card">
+          <div class="stat-card" data-stat="purchased">
             <div class="stat-icon tertiary">
               <span class="material-symbols-outlined">payments</span>
             </div>
-            <h4>300 <span>TND</span></h4>
-            <p class="stat-label">Total Earnings</p>
+            <h4>0</h4>
+            <p class="stat-label">Total Purchased</p>
           </div>
 
-          <div class="stat-card">
+          <div class="stat-card" data-stat="aura">
             <div class="stat-icon accent">
               <span class="material-symbols-outlined">visibility</span>
             </div>
-            <h4>2,840</h4>
+            <h4>0</h4>
             <p class="stat-label">Aura points</p>
           </div>
         </section>
@@ -795,13 +801,32 @@ Computer Science student at ISIMM. Sharing my deep-dive notes on advanced algori
             <!-- File Upload -->
             <div class="form-group">
               <label class="form-label">File Attachment</label>
-              <div class="upload-drop" role="button" tabindex="0">
+              <div
+                class="upload-drop"
+                id="uploadDrop"
+                role="button"
+                tabindex="0"
+              >
                 <div class="upload-icon">
                   <span class="material-symbols-outlined">upload_file</span>
                 </div>
                 <p>Click to Upload</p>
                 <span>PDF, ZIP or DOCX</span>
               </div>
+              <input
+                id="noteFile"
+                type="file"
+                accept="application/pdf,.pdf"
+                hidden
+              />
+              <p
+                id="noteFileName"
+                style="
+                  margin-top: 0.5rem;
+                  font-size: 0.85rem;
+                  color: var(--on-surface-variant, #545d86);
+                "
+              ></p>
             </div>
 
             <!-- Price -->
@@ -825,7 +850,7 @@ Computer Science student at ISIMM. Sharing my deep-dive notes on advanced algori
 
         <div class="modal-footer">
           <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-          <button class="btn-submit" onclick="closeModal()">
+          <button class="btn-submit" onclick="submitUploadNote()">
             <span class="material-symbols-outlined">publish</span>
             Post to Playground
           </button>

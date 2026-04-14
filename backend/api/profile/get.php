@@ -5,22 +5,37 @@ require_once '../../middleware/auth.php';
 
 $userId = verifyToken();
 
-$stmt = $pdo->prepare('SELECT id, name, email, filiere, bio, photo, created_at FROM users WHERE id = ?');
+$stmt = $pdo->prepare('SELECT id, nom, email, code_institut, role, solde_portefeuille, date_inscription, aura_points, sold_count FROM utilisateurs WHERE id = ?');
 $stmt->execute([$userId]);
 $user = $stmt->fetch();
 
-$stmt = $pdo->prepare('SELECT COUNT(*) AS total FROM documents WHERE user_id = ?');
-$stmt->execute([$userId]);
-$docsCount = $stmt->fetch()['total'];
+if (!$user) {
+    http_response_code(404);
+    echo json_encode(['success' => false, 'message' => 'Utilisateur introuvable']);
+    exit;
+}
 
-$stmt = $pdo->prepare('SELECT COUNT(*) AS total FROM purchases WHERE user_id = ? AND status = "completed"');
+$stmt = $pdo->prepare('SELECT COUNT(*) AS total FROM documents WHERE utilisateur_id = ?');
 $stmt->execute([$userId]);
-$purchasesCount = $stmt->fetch()['total'];
+$docsCount = (int)($stmt->fetch()['total'] ?? 0);
+
+$stmt = $pdo->prepare('SELECT COUNT(*) AS total FROM transactions WHERE utilisateur_id = ? AND type = "achat" AND statut = "complete"');
+$stmt->execute([$userId]);
+$purchasesCount = (int)($stmt->fetch()['total'] ?? 0);
 
 echo json_encode([
     'success' => true,
-    'data'    => array_merge($user, [
+    'data'    => [
+        'id'             => (string)$user['id'],
+        'name'           => $user['nom'],
+        'email'          => $user['email'],
+        'institute_code' => $user['code_institut'],
+        'role'           => $user['role'] ?? 'etudiant',
+        'sold'           => (float)($user['solde_portefeuille'] ?? 0),
+        'created_at'     => $user['date_inscription'],
         'documents_count' => $docsCount,
-        'purchases_count' => $purchasesCount
-    ])
+        'purchases_count' => $purchasesCount,
+        'aura_points'    => (int)($user['aura_points'] ?? 0),
+        'sold_count'     => (int)($user['sold_count'] ?? 0)
+    ]
 ]);
