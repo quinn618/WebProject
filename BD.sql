@@ -222,3 +222,6 @@ CREATE TABLE logs_activite (
     INDEX idx_utilisateur (utilisateur_id),
     INDEX idx_date (date_action)
 ) ENGINE=InnoDB;
+
+ALTER TABLE utilisateurs ADD COLUMN aura_points INT DEFAULT 0;
+ALTER TABLE utilisateurs ADD COLUMN sold_count INT DEFAULT 0;
