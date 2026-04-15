@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Notes – Ghassra Core</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="notes.css"/>
+  <script src="notes.js" defer></script>
+  <script src="shared.js" defer></script>
+  <link rel="stylesheet" href="shared.css"/>
+</head>
+<body>
+
+  <!-- TopNavBar -->
+  <nav class="topnav">
+    <div class="topnav-left">
+      <a class="brand" href="#">Ghassra Core</a>
+      <div class="topnav-links">
+        <a href="main.html">Resources</a>
+      </div>
+    </div>
+    <div class="topnav-right">
+      <button class="plus-btn" aria-label="Upload new note">
+        <span class="material-symbols-outlined">add</span>
+      </button>
+      <button class="icon-btn" aria-label="Notifications">
+        <span class="material-symbols-outlined">notifications</span>
+      </button>
+      <div class="avatar-sm">
+        <img src="../assets/images/student avatar.jpg" alt="Student avatar"/>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SideNavBar -->
+  <aside class="sidenav">
+   
+    <nav>
+      <a href="profile.html">
+        <span class="material-symbols-outlined">account_circle</span>
+        <span>Profile</span>
+      </a>
+      <a href="#" class="active">
+        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">description</span>
+        <span>My Notes</span>
+      </a>
+      <a href="earnings.html">
+        <span class="material-symbols-outlined">payments</span>
+        <span>Earnings</span>
+      </a>
+      <a href="downloads.html">
+        <span class="material-symbols-outlined">download</span>
+        <span>Downloads</span>
+      </a>
+      <a href="#" class="logout" onclick="confirmLogout(event)">
+        <span class="material-symbols-outlined">logout</span>
+        <span>Logout</span>
+      </a>
+    </nav>
+    <div class="sidenav-footer">
+      <div class="sold-card" onclick="openSoldModal()">
+        <div class="sold-card-icon">
+          <span class="material-symbols-outlined">shopping_cart</span>
+        </div>
+        <h4 id="soldCount">28</h4>
+        <p>My Sold</p>
+      </div>
+      <button class="upload-btn-sidebar">Upload New Note</button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+
+    <div class="page-header">
+      <h1>My Notes</h1>
+      <p>Your archive of every document you've studied or shared.</p>
+    </div>
+
+    <div class="search-bar-large">
+      <span class="material-symbols-outlined" style="color:var(--primary);font-size:1.5rem;">search</span>
+      <input id="searchInput" placeholder="Search through titles, topics, or types..." type="text"/>
+    </div>
+
+    <div class="notes-grid" id="notesGrid">
+
+      <div class="note-card">
+        <div class="note-card-body">
+          <div class="note-icon-wrap primary">
+            <span class="material-symbols-outlined">description</span>
+          </div>
+          <div>
+            <h3>C++ Advanced Algorithms</h3>
+            <p>Complete set of notes covering graph theory, dynamic programming, and complexity analysis for CS301.</p>
+          </div>
+        </div>
+        <div class="note-card-footer">
+          <div class="note-meta">
+            <span class="meta-tag">PDF</span>
+            <span class="meta-size">4.2 MB</span>
+          </div>
+          <button class="view-btn">
+            <span class="material-symbols-outlined">open_in_new</span>
+            Open
+          </button>
+        </div>
+      </div>
+
+      <div class="note-card">
+        <div class="note-card-body">
+          <div class="note-icon-wrap secondary">
+            <span class="material-symbols-outlined">hub</span>
+          </div>
+          <div>
+            <h3>IoT Sensors Lab</h3>
+            <p>Step-by-step guide for interfacing DHT11 and Ultrasonic sensors with ESP32 microcontrollers.</p>
+          </div>
+        </div>
+        <div class="note-card-footer">
+          <div class="note-meta">
+            <span class="meta-tag">Guide</span>
+            <span class="meta-size">1.1 MB</span>
+          </div>
+          <button class="view-btn">
+            <span class="material-symbols-outlined">open_in_new</span>
+            Open
+          </button>
+        </div>
+      </div>
+
+      <div class="note-card">
+        <div class="note-card-body">
+          <div class="note-icon-wrap tertiary">
+            <span class="material-symbols-outlined">security</span>
+          </div>
+          <div>
+            <h3>Network Security Protocols</h3>
+            <p>In-depth look at SSL/TLS handshake mechanisms and common vulnerability mitigation strategies.</p>
+          </div>
+        </div>
+        <div class="note-card-footer">
+          <div class="note-meta">
+            <span class="meta-tag">DOCX</span>
+            <span class="meta-size">8.5 MB</span>
+          </div>
+          <button class="view-btn">
+            <span class="material-symbols-outlined">open_in_new</span>
+            Open
+          </button>
+        </div>
+      </div>
+
+      <div class="note-card">
+        <div class="note-card-body">
+          <div class="note-icon-wrap primary">
+            <span class="material-symbols-outlined">functions</span>
+          </div>
+          <div>
+            <h3>Linear Algebra Cheat Sheet</h3>
+            <p>Quick reference for matrix operations, eigenvalues, and vector space transformations.</p>
+          </div>
+        </div>
+        <div class="note-card-footer">
+          <div class="note-meta">
+            <span class="meta-tag">PDF</span>
+            <span class="meta-size">0.9 MB</span>
+          </div>
+          <button class="view-btn">
+            <span class="material-symbols-outlined">open_in_new</span>
+            Open
+          </button>
+        </div>
+      </div>
+
+      <div class="note-card">
+        <div class="note-card-body">
+          <div class="note-icon-wrap secondary">
+            <span class="material-symbols-outlined">terminal</span>
+          </div>
+          <div>
+            <h3>Operating Systems: Kernels</h3>
+            <p>Research paper on microkernel vs monolithic kernel architectures in modern OS design.</p>
+          </div>
+        </div>
+        <div class="note-card-footer">
+          <div class="note-meta">
+            <span class="meta-tag">PDF</span>
+            <span class="meta-size">5.1 MB</span>
+          </div>
+          <button class="view-btn">
+            <span class="material-symbols-outlined">open_in_new</span>
+            Open
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <span class="material-symbols-outlined">search_off</span>
+      <p>No notes match your search.</p>
+    </div>
+
+  </main>
+
+
+</html>
+  <!-- Sold Modal -->
+  <div class="modal-overlay" id="soldModal" onclick="handleSoldOverlayClick(event)">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <div>
+          <h2>Add Sold Item</h2>
+          <p>Record a new successful sale.</p>
+        </div>
+        <button class="modal-close" onclick="closeSoldModal()" aria-label="Close">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Add Sold</label>
+          <input id="soldPrice" class="form-input" type="number" placeholder="0"/>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeSoldModal()">Cancel</button>
+        <button class="btn-submit" onclick="logSale()">
+          Add
+        </button>
+      </div>
+    </div>
+  </div>
+
+  
+</body>
+</html>

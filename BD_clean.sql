@@ -53,7 +53,7 @@ CREATE TABLE documents (
     titre VARCHAR(255) NOT NULL,
     description TEXT NULL,
     chemin_fichier VARCHAR(500) NOT NULL,
-    prix DECIMAL(10,2) DEFAULT 0.00,  
+    prix DECIMAL(10,2) DEFAULT 0.00,  -- 0.00 = gratuit
     
     utilisateur_id INT NOT NULL,
     matiere_id INT NOT NULL,
@@ -65,14 +65,15 @@ CREATE TABLE documents (
     note_moyenne DECIMAL(3,2) DEFAULT 0.00,
     
     type_fichier VARCHAR(50) NULL,
-    taille_fichier INT NULL,  
+    taille_fichier INT NULL,  -- en bytes
+    
     date_upload DATETIME DEFAULT CURRENT_TIMESTAMP,
     date_validation DATETIME NULL,
-    valide_par INT NULL,  
+    valide_par INT NULL,  -- Admin qui a validé
+    
     FOREIGN KEY (utilisateur_id) REFERENCES utilisateurs(id) ON DELETE CASCADE,
     FOREIGN KEY (matiere_id) REFERENCES matieres(id) ON DELETE CASCADE,
     FOREIGN KEY (valide_par) REFERENCES utilisateurs(id) ON DELETE SET NULL,
-    
     
     INDEX idx_utilisateur (utilisateur_id),
     INDEX idx_matiere (matiere_id),
@@ -88,11 +89,11 @@ CREATE TABLE transactions (
     montant DECIMAL(10,2) NOT NULL,
     
     methode_paiement ENUM('carte', 'paypal') NULL,
-  
+    
     statut ENUM('en_attente', 'complete', 'echouee') DEFAULT 'en_attente',
     
     stripe_payment_id VARCHAR(255) NULL,
-  
+    
     document_id INT NULL,
     
     date_transaction DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -123,9 +124,11 @@ CREATE TABLE utilisateur_documents (
     FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE,
     
     UNIQUE KEY unique_acces (utilisateur_id, document_id),
+    
     INDEX idx_utilisateur (utilisateur_id),
     INDEX idx_document (document_id)
 ) ENGINE=InnoDB;
+les documents
 
 CREATE TABLE notations (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -135,17 +138,14 @@ CREATE TABLE notations (
     note INT NOT NULL CHECK (note BETWEEN 1 AND 5),
     commentaire TEXT NULL,
     
-    -- Dates
     date_creation DATETIME DEFAULT CURRENT_TIMESTAMP,
     date_modification DATETIME NULL,
     
-    -- Clés étrangères
     FOREIGN KEY (utilisateur_id) REFERENCES utilisateurs(id) ON DELETE CASCADE,
     FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE,
     
     UNIQUE KEY unique_notation (utilisateur_id, document_id),
     
-    -- Index
     INDEX idx_utilisateur (utilisateur_id),
     INDEX idx_document (document_id)
 ) ENGINE=InnoDB;
@@ -154,22 +154,17 @@ CREATE TABLE sessions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     utilisateur_id INT NOT NULL,
     
-    -- Token de session
     token VARCHAR(255) UNIQUE NOT NULL,
     
-    -- Informations de connexion
     ip_address VARCHAR(45) NULL,
     user_agent TEXT NULL,
     
-    -- Dates
     date_creation DATETIME DEFAULT CURRENT_TIMESTAMP,
     date_expiration DATETIME NOT NULL,
     est_active BOOLEAN DEFAULT TRUE,
     
-    -- Clé étrangère
     FOREIGN KEY (utilisateur_id) REFERENCES utilisateurs(id) ON DELETE CASCADE,
     
-    -- Index
     INDEX idx_token (token),
     INDEX idx_expiration (date_expiration)
 ) ENGINE=InnoDB;
@@ -178,7 +173,6 @@ CREATE TABLE notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
     utilisateur_id INT NOT NULL,
     
-    -- Type de notification
     type ENUM(
         'document_valide', 
         'document_rejete', 
@@ -188,21 +182,16 @@ CREATE TABLE notifications (
         'systeme'
     ) NOT NULL,
     
-    -- Contenu
     message TEXT NOT NULL,
     est_lu BOOLEAN DEFAULT FALSE,
     
-    -- Dates
     date_creation DATETIME DEFAULT CURRENT_TIMESTAMP,
     date_lecture DATETIME NULL,
     
-    -- Lien optionnel vers la page concernée
     lien VARCHAR(255) NULL,
     
-    -- Clé étrangère
     FOREIGN KEY (utilisateur_id) REFERENCES utilisateurs(id) ON DELETE CASCADE,
     
-    -- Index
     INDEX idx_utilisateur_nonlu (utilisateur_id, est_lu)
 ) ENGINE=InnoDB;
 
@@ -215,13 +204,8 @@ CREATE TABLE logs_activite (
     ip_address VARCHAR(45) NULL,
     date_action DATETIME DEFAULT CURRENT_TIMESTAMP,
     
-    -- Clé étrangère (peut être NULL si utilisateur supprimé)
     FOREIGN KEY (utilisateur_id) REFERENCES utilisateurs(id) ON DELETE SET NULL,
     
-    -- Index
     INDEX idx_utilisateur (utilisateur_id),
     INDEX idx_date (date_action)
 ) ENGINE=InnoDB;
-
-ALTER TABLE utilisateurs ADD COLUMN aura_points INT DEFAULT 0;
-ALTER TABLE utilisateurs ADD COLUMN sold_count INT DEFAULT 0;
