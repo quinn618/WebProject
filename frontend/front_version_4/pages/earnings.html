@@ -6,9 +6,11 @@
   <title>Earnings – Ghassra Core</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="earnings.css"/>
-  <script src="shared.js" defer></script>
-  <link rel="stylesheet" href="shared.css"/>
+  <link rel="stylesheet" href="../assets/css/shared.css"/>
+  <link rel="stylesheet" href="../assets/css/earnings.css"/>
+  <script src="../assets/js/api.js" defer></script>
+  <script src="../assets/js/shared.js" defer></script>
+  <script src="../assets/js/earnings.js" defer></script>
 </head>
 <body>
 
@@ -63,7 +65,7 @@
         <div class="sold-card-icon">
           <span class="material-symbols-outlined">shopping_cart</span>
         </div>
-        <h4 id="soldCount">28</h4>
+        <h4 id="soldCount">0</h4>
         <p>My Sold</p>
       </div>
       <button class="upload-btn-sidebar" onclick="openModal()">Upload New Note</button>
@@ -83,7 +85,7 @@
           </div>
           <div>
             <p class="balance-label">Total Earnings Available</p>
-            <h3 class="balance-amount">300.000 <span>TND</span></h3>
+            <h3 class="balance-amount">0 <span>TND</span></h3>
           </div>
         </div>
 
@@ -111,61 +113,8 @@
       </section>
 
       <section>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Document Title</th>
-                <th>Category</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Amount (TND)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><div class="td-doc"><span class="material-symbols-outlined">article</span><span class="name">IoT Architecture Final Review</span></div></td>
-                <td><span class="tag">Engineering</span></td>
-                <td class="td-date">Oct 24, 2023</td>
-                <td><span class="status-dot">Completed</span></td>
-                <td class="td-amount">+25.000</td>
-              </tr>
-              <tr>
-                <td><div class="td-doc"><span class="material-symbols-outlined">article</span><span class="name">Advanced Data Structures Summary</span></div></td>
-                <td><span class="tag">Computer Science</span></td>
-                <td class="td-date">Oct 22, 2023</td>
-                <td><span class="status-dot">Completed</span></td>
-                <td class="td-amount">+15.500</td>
-              </tr>
-              <tr>
-                <td><div class="td-doc"><span class="material-symbols-outlined">article</span><span class="name">Digital Electronics Lab Report</span></div></td>
-                <td><span class="tag">Electronics</span></td>
-                <td class="td-date">Oct 20, 2023</td>
-                <td><span class="status-dot">Completed</span></td>
-                <td class="td-amount">+10.000</td>
-              </tr>
-              <tr>
-                <td><div class="td-doc"><span class="material-symbols-outlined">article</span><span class="name">Operating Systems – Threading Guide</span></div></td>
-                <td><span class="tag">Computer Science</span></td>
-                <td class="td-date">Oct 18, 2023</td>
-                <td><span class="status-dot">Completed</span></td>
-                <td class="td-amount">+30.000</td>
-              </tr>
-              <tr>
-                <td><div class="td-doc"><span class="material-symbols-outlined">article</span><span class="name">Linear Algebra Cheat Sheet</span></div></td>
-                <td><span class="tag">Mathematics</span></td>
-                <td class="td-date">Oct 15, 2023</td>
-                <td><span class="status-dot">Completed</span></td>
-                <td class="td-amount">+12.000</td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="table-footer">
-            <button class="btn-load-more">
-              Load More Transactions
-              <span class="material-symbols-outlined" style="font-size:1rem;">keyboard_arrow_down</span>
-            </button>
-          </div>
+        <div class="earnings-list">
+          <!-- Dynamic earnings content will be loaded here -->
         </div>
       </section>
 

@@ -1,0 +1,25 @@
+{
+  "name": "ghassra-frontend",
+  "version": "1.0.0",
+  "description": "Ghassra Frontend Application",
+  "main": "index.html",
+  "scripts": {
+    "start": "http-server ./front_version_4 -p 8000",
+    "dev": "http-server ./front_version_4 -p 8000 -c-1",
+    "build": "echo 'Build script - add your build tool here'",
+    "lint": "echo 'Add linting configuration here'"
+  },
+  "keywords": [
+    "ghassra",
+    "documents",
+    "payments"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}

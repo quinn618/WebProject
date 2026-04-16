@@ -18,6 +18,12 @@ if (!$docId) {
     exit;
 }
 
+// Get user's balance
+$stmt = $pdo->prepare('SELECT solde_portefeuille FROM utilisateurs WHERE id = ?');
+$stmt->execute([$userId]);
+$userRow = $stmt->fetch();
+$userBalance = (float)($userRow['solde_portefeuille'] ?? 0);
+
 $stmt = $pdo->prepare('SELECT id, prix FROM documents WHERE id = ?');
 $stmt->execute([$docId]);
 $doc = $stmt->fetch();
@@ -30,6 +36,17 @@ if (!$doc) {
 $price = (float)($doc['prix'] ?? 0);
 if ($price <= 0) {
     echo json_encode(['success' => false, 'message' => 'Ce document est gratuit']);
+    exit;
+}
+
+// Check if user has enough balance
+if ($userBalance < $price) {
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Solde insuffisant pour acheter ce document',
+        'required' => $price,
+        'balance' => $userBalance
+    ]);
     exit;
 }
 
@@ -47,7 +64,12 @@ $txnId = (int)$pdo->lastInsertId();
 
 echo json_encode([
     'success' => true,
-    'message' => 'Passerelle de paiement non configurée (mode démo)',
+    'message' => 'Transaction créée - Prêt à confirmer le paiement',
     'payment_url' => null,
-    'payment_ref' => 'txn:' . $txnId
+    'payment_ref' => 'txn:' . $txnId,
+    'data' => [
+        'transaction_id' => $txnId,
+        'amount' => $price,
+        'balance' => $userBalance
+    ]
 ]);

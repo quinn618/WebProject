@@ -39,31 +39,55 @@ if (!$txn) {
 }
 
 $documentId = (int)($txn['document_id'] ?? $docId);
+$amount = (float)($txn['montant'] ?? 0);
 
-// Demo: mark as complete
-$stmt = $pdo->prepare('UPDATE transactions SET statut = "complete" WHERE id = ?');
-$stmt->execute([$txnId]);
+try {
+    $pdo->beginTransaction();
 
-if ($documentId > 0) {
-    $stmt = $pdo->prepare('INSERT INTO utilisateur_documents (utilisateur_id, document_id, type_acces) VALUES (?, ?, "achete")');
-    $stmt->execute([$userId, $documentId]);
-    
-    // Get the seller (document author) and increment their sold_count
-    $stmt = $pdo->prepare('SELECT utilisateur_id FROM documents WHERE id = ?');
-    $stmt->execute([$documentId]);
-    $docRow = $stmt->fetch();
-    
-    if ($docRow) {
-        $sellerId = (int)$docRow['utilisateur_id'];
-        // Increment seller's sold_count and aura_points
-        $stmt = $pdo->prepare('UPDATE utilisateurs SET sold_count = sold_count + 1, aura_points = aura_points + 15 WHERE id = ?');
-        $stmt->execute([$sellerId]);
+    // Demo: mark as complete
+    $stmt = $pdo->prepare('UPDATE transactions SET statut = "complete" WHERE id = ?');
+    $stmt->execute([$txnId]);
+
+    if ($documentId > 0) {
+        $stmt = $pdo->prepare('INSERT INTO utilisateur_documents (utilisateur_id, document_id, type_acces) VALUES (?, ?, "achete")');
+        $stmt->execute([$userId, $documentId]);
+        
+        // Get the seller (document author)
+        $stmt = $pdo->prepare('SELECT utilisateur_id FROM documents WHERE id = ?');
+        $stmt->execute([$documentId]);
+        $docRow = $stmt->fetch();
+        
+        if ($docRow) {
+            $sellerId = (int)$docRow['utilisateur_id'];
+            
+            // Deduct from buyer's balance
+            $stmt = $pdo->prepare('UPDATE utilisateurs SET solde_portefeuille = solde_portefeuille - ? WHERE id = ?');
+            $stmt->execute([$amount, $userId]);
+            
+            // Add to seller's balance
+            $stmt = $pdo->prepare('UPDATE utilisateurs SET solde_portefeuille = solde_portefeuille + ? WHERE id = ?');
+            $stmt->execute([$amount, $sellerId]);
+            
+            // Increment seller's sold_count and aura_points
+            $stmt = $pdo->prepare('UPDATE utilisateurs SET sold_count = sold_count + 1, aura_points = aura_points + 15 WHERE id = ?');
+            $stmt->execute([$sellerId]);
+        }
     }
-}
+    
+    $pdo->commit();
 
-echo json_encode([
-    'success'  => true,
-    'verified' => true,
-    'message'  => 'Paiement validé (mode démo)',
-    'purchase' => $documentId > 0 ? ['document_id' => $documentId] : null,
-]);
+    echo json_encode([
+        'success'  => true,
+        'verified' => true,
+        'message'  => 'Paiement validé et traité',
+        'purchase' => $documentId > 0 ? ['document_id' => $documentId, 'amount' => $amount] : null,
+    ]);
+
+} catch (Exception $e) {
+    $pdo->rollBack();
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Erreur lors du traitement: ' . $e->getMessage()
+    ]);
+}

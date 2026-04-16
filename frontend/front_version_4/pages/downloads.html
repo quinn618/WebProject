@@ -6,9 +6,11 @@
   <title>Downloads – Ghassra Core</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="downloads.css"/>
-  <script src="shared.js" defer></script>
-  <link rel="stylesheet" href="shared.css"/>
+  <link rel="stylesheet" href="../assets/css/shared.css"/>
+  <link rel="stylesheet" href="../assets/css/downloads.css"/>
+  <script src="../assets/js/api.js" defer></script>
+  <script src="../assets/js/shared.js" defer></script>
+  <script src="../assets/js/downloads.js" defer></script>
 </head>
 <body>
 
@@ -64,7 +66,7 @@
         <div class="sold-card-icon">
           <span class="material-symbols-outlined">shopping_cart</span>
         </div>
-        <h4 id="soldCount">28</h4>
+        <h4 id="soldCount">0</h4>
         <p>My Sold</p>
       </div>
       <button class="upload-btn-sidebar">Upload New Note</button>
@@ -81,91 +83,11 @@
     <div class="section-header">
       <span class="material-symbols-outlined" style="color:var(--primary);">history</span>
       <h2>Your Downloads</h2>
-      <span class="section-count">4 files</span>
+      <span class="section-count">0 files</span>
     </div>
 
     <div class="items-list">
-
-      <div class="download-item">
-        <div class="item-left">
-          <div class="item-icon" style="background:rgba(176,190,255,0.3);color:var(--primary);">
-            <span class="material-symbols-outlined">description</span>
-          </div>
-          <div class="item-details">
-            <h4>C++ Final Exam 2023</h4>
-            <div class="item-meta">
-              <span><span class="material-symbols-outlined">calendar_today</span> Oct 24, 2023</span>
-              <span><span class="material-symbols-outlined">database</span> 2.4 MB</span>
-              <span class="meta-tag">Exam</span>
-            </div>
-          </div>
-        </div>
-        <button class="download-btn">
-          <span class="material-symbols-outlined">download</span>
-          Download Again
-        </button>
-      </div>
-
-      <div class="download-item">
-        <div class="item-left">
-          <div class="item-icon" style="background:rgba(155,253,233,0.3);color:var(--secondary);">
-            <span class="material-symbols-outlined">hub</span>
-          </div>
-          <div class="item-details">
-            <h4>IoT Architecture Notes</h4>
-            <div class="item-meta">
-              <span><span class="material-symbols-outlined">calendar_today</span> Oct 20, 2023</span>
-              <span><span class="material-symbols-outlined">database</span> 15.8 MB</span>
-              <span class="meta-tag">Lecture</span>
-            </div>
-          </div>
-        </div>
-        <button class="download-btn">
-          <span class="material-symbols-outlined">download</span>
-          Download Again
-        </button>
-      </div>
-
-      <div class="download-item">
-        <div class="item-left">
-          <div class="item-icon" style="background:rgba(218,163,255,0.3);color:var(--tertiary);">
-            <span class="material-symbols-outlined">integration_instructions</span>
-          </div>
-          <div class="item-details">
-            <h4>Data Structures Lab Code.zip</h4>
-            <div class="item-meta">
-              <span><span class="material-symbols-outlined">calendar_today</span> Oct 18, 2023</span>
-              <span><span class="material-symbols-outlined">database</span> 1.1 MB</span>
-              <span class="meta-tag">Source Code</span>
-            </div>
-          </div>
-        </div>
-        <button class="download-btn">
-          <span class="material-symbols-outlined">download</span>
-          Download Again
-        </button>
-      </div>
-
-      <div class="download-item">
-        <div class="item-left">
-          <div class="item-icon" style="background:rgba(247,106,128,0.15);color:var(--error);">
-            <span class="material-symbols-outlined">picture_as_pdf</span>
-          </div>
-          <div class="item-details">
-            <h4>Machine Learning Theory</h4>
-            <div class="item-meta">
-              <span><span class="material-symbols-outlined">calendar_today</span> Oct 15, 2023</span>
-              <span><span class="material-symbols-outlined">database</span> 4.7 MB</span>
-              <span class="meta-tag">PDF Book</span>
-            </div>
-          </div>
-        </div>
-        <button class="download-btn">
-          <span class="material-symbols-outlined">download</span>
-          Download Again
-        </button>
-      </div>
-
+      <!-- Dynamic download items will be loaded here -->
     </div>
   </main>
 

@@ -17,10 +17,12 @@ $isMultipart = stripos($contentType, 'multipart/form-data') !== false;
 if ($isMultipart) {
     $name  = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
+    $sold  = isset($_POST['sold']) ? floatval($_POST['sold']) : null;
 } else {
     $data  = json_decode(file_get_contents('php://input'), true) ?: [];
     $name  = trim($data['name'] ?? '');
     $email = trim($data['email'] ?? '');
+    $sold  = isset($data['sold']) ? floatval($data['sold']) : null;
 }
 
 if (!$name) {
@@ -28,20 +30,33 @@ if (!$name) {
     exit;
 }
 
-// Update only fields that exist in the current DB schema.
-// Other frontend fields (bio, github, major, year_level, avatar_url, ...) are ignored for now.
+// Validate email if provided
 if ($email && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     echo json_encode(['success' => false, 'message' => 'Email invalide']);
     exit;
 }
 
+// Update profile fields
+$updates = [];
+$params = [];
+
+$updates[] = 'nom = ?';
+$params[] = $name;
+
 if ($email) {
-    $stmt = $pdo->prepare('UPDATE utilisateurs SET nom = ?, email = ? WHERE id = ?');
-    $stmt->execute([$name, $email, $userId]);
-} else {
-    $stmt = $pdo->prepare('UPDATE utilisateurs SET nom = ? WHERE id = ?');
-    $stmt->execute([$name, $userId]);
+    $updates[] = 'email = ?';
+    $params[] = $email;
 }
+
+if ($sold !== null && $sold >= 0) {
+    $updates[] = 'solde_portefeuille = ?';
+    $params[] = $sold;
+}
+
+$params[] = $userId;
+
+$stmt = $pdo->prepare('UPDATE utilisateurs SET ' . implode(', ', $updates) . ' WHERE id = ?');
+$stmt->execute($params);
 
 // Return the updated profile snapshot
 $stmt = $pdo->prepare('SELECT id, nom, email, code_institut, role, solde_portefeuille, date_inscription FROM utilisateurs WHERE id = ?');
