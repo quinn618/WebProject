@@ -1,3 +1,5 @@
+const apiRequest = window.apiRequest;
+
 // ==================== LOGIN ====================
 async function handleLogin(e) {
   e.preventDefault();

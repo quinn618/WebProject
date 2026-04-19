@@ -1,4 +1,5 @@
 const apiRequest = window.apiRequest;
+
 // ==================== LOAD PROFILE ====================
 async function loadProfile() {
   try {
@@ -73,7 +74,7 @@ async function loadPurchasesHistory() {
           p.purchased_at || p.created_at,
         ).toLocaleDateString("en-US");
         // Use dl=1 + t= for direct browser download (no AJAX needed)
-        const dlUrl = `${API_BASE}/documents/download.php?id=${p.document_id}&dl=1&t=${encodeURIComponent(localStorage.getItem("token"))}`;
+        const dlUrl = `${window.API_BASE}/documents/download.php?id=${p.document_id}&dl=1&t=${encodeURIComponent(localStorage.getItem("token"))}`;
         return `<div class="purchase-item">
         <div class="purchase-info">
           <span class="material-symbols-outlined">description</span>

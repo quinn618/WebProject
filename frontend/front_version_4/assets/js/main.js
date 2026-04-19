@@ -1,3 +1,5 @@
+const apiRequest = window.apiRequest;
+
 // ==================== COLOR PALETTE ====================
 const letterColors = {
   A: "#FF6B6B",

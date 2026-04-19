@@ -1,3 +1,5 @@
+const apiRequest = window.apiRequest;
+
 // ==================== downloads.js ====================
 
 async function loadPurchases() {

@@ -1,3 +1,5 @@
+const apiRequest = window.apiRequest;
+
 // ==================== STATE ====================
 
 let allDocuments = [];
