@@ -1,9 +1,48 @@
-const apiRequest = window.apiRequest;
-
 // ==================== STATE ====================
 
 let allDocuments = [];
 let currentQuery = "";
+
+// ==================== COLOR PALETTE ====================
+const letterColors = {
+  A: "#FF6B6B",
+  B: "#4ECDC4",
+  C: "#45B7D1",
+  D: "#FFA07A",
+  E: "#98D8C8",
+  F: "#F7DC6F",
+  G: "#BB8FCE",
+  H: "#85C1E2",
+  I: "#F8B88B",
+  J: "#52B788",
+  K: "#D4A5FF",
+  L: "#FF9E64",
+  M: "#9F8FEF",
+  N: "#6BCB77",
+  O: "#FF6B9D",
+  P: "#A8E6CF",
+  Q: "#FFD3B6",
+  R: "#FFAAA5",
+  S: "#FF8B94",
+  T: "#7FCDBB",
+  U: "#C5FAD5",
+  V: "#80ED99",
+  W: "#FFB703",
+  X: "#FB5607",
+  Y: "#FFBE0B",
+  Z: "#8338EC",
+};
+
+function getLetterColor(l) {
+  return letterColors[l.toUpperCase()] || "#3d57bb";
+}
+
+function generateFirstLetterAvatar(title) {
+  const l = (title || "?").charAt(0).toUpperCase();
+  return `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+    background:${getLetterColor(l)};font-size:3.5rem;font-weight:700;color:white;
+    font-family:'Plus Jakarta Sans',sans-serif;">${l}</div>`;
+}
 
 // ==================== LOAD ====================
 
@@ -12,8 +51,8 @@ async function loadMyDocuments() {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     if (!user.id) return;
 
-    const docs = await apiRequest("/documents/list.php?user_id=" + user.id);
-    allDocuments = docs;
+    const resp = await apiRequest("/documents/list.php?user_id=" + user.id);
+    allDocuments = resp.data || [];
     renderNotes();
   } catch (err) {
     console.error("Erreur chargement documents :", err.message);
@@ -24,7 +63,7 @@ async function loadMyDocuments() {
 // ==================== RENDER ====================
 
 function renderNotes() {
-  const container = document.querySelector(".notes-grid");
+  const container = document.querySelector(".cards-grid");
   const emptyState = document.getElementById("emptyState");
   if (!container) return;
 
@@ -48,56 +87,66 @@ function renderNotes() {
 
   if (emptyState) emptyState.style.display = "none";
   container.innerHTML = results.map(generateNoteCard).join("");
+  
+  // Add click handlers to cards (excluding action buttons)
+  document.querySelectorAll(".note-card").forEach((card) => {
+    card.addEventListener("click", function (e) {
+      // Don't trigger if clicking edit/delete buttons
+      if (e.target.closest(".note-btn")) return;
+      const docId = this.getAttribute("data-id");
+      const doc = allDocuments.find((d) => d.id == docId);
+      if (doc) showDocumentDetails(doc);
+    });
+  });
 }
 
+// ==================== SHOW DOCUMENT DETAILS ====================
+function showDocumentDetails(doc) {
+  const details = `<strong>${doc.title}</strong><br>
+    Author: ${doc.author || "@unknown"}<br>
+    Subject: ${doc.matiere || "N/A"}<br>
+    Field: ${doc.filiere || "N/A"}<br>
+    Price: ${doc.is_paid ? doc.price.toFixed(2) + " DT" : "Free"}`;
+  showToast(details, "info");
+}
+
+// ==================== GENERATE CARD ====================
 function generateNoteCard(doc) {
-  const typeLabel =
-    doc.type === "paid"
-      ? '<span style="color:#1D9E75;font-weight:700;">' +
-        parseFloat(doc.price).toFixed(2) +
-        " DT</span>"
-      : '<span style="color:#3d57bb;font-weight:700;">Gratuit</span>';
+  const author = doc.author || "@unknown";
+  const fileType = doc.file_type || "PDF";
+  const badgeClass = doc.is_paid ? "badge-teal" : "badge-blue";
+  const badge = doc.is_paid ? "Paid" : "Free";
+  const price = parseFloat(doc.price || 0);
 
-  const date = new Date(doc.created_at).toLocaleDateString("fr-FR");
+  const priceTag = doc.is_paid
+    ? `<span class="price-tag">${price.toFixed(2)} DT</span>`
+    : `<span class="price-tag free">Gratuit</span>`;
 
-  return (
-    '<div class="note-card" data-id="' +
-    doc.id +
-    '">' +
-    '<div class="note-header">' +
-    "<h3>" +
-    doc.title +
-    "</h3>" +
-    '<div class="note-actions">' +
-    '<button class="note-btn" onclick="editDocument(' +
-    doc.id +
-    ')" title="Modifier">' +
-    '<span class="material-symbols-outlined">edit</span>' +
-    "</button>" +
-    '<button class="note-btn danger" onclick="deleteDocument(' +
-    doc.id +
-    ')" title="Supprimer">' +
-    '<span class="material-symbols-outlined">delete</span>' +
-    "</button>" +
-    "</div>" +
-    "</div>" +
-    "<p>" +
-    (doc.description || "Aucune description") +
-    "</p>" +
-    '<div class="note-footer">' +
-    '<span class="note-meta">' +
-    doc.filiere +
-    " · " +
-    doc.matiere +
-    "</span>" +
-    typeLabel +
-    '<span class="note-date">' +
-    date +
-    "</span>" +
-    "</div>" +
-    "</div>"
-  );
-}
+  return `<div class="resource-card note-card" data-id="${doc.id}" style="cursor:pointer;transition:all 0.2s ease;">
+    <div class="card-img-wrap">
+      ${generateFirstLetterAvatar(doc.title)}
+      <span class="card-badge ${badgeClass}">${badge}</span>
+    </div>
+    <h3 class="card-title">${doc.title}</h3>
+    <div class="card-author">
+      <div class="author-avatar bg-purple">
+        <img src="../assets/images/student avatar.jpg" alt="${author}"/>
+      </div>
+      <span class="author-name">${author}</span>
+    </div>
+    <div class="card-footer">
+      <span class="file-type">${fileType}</span>
+      ${priceTag}
+      <div class="note-actions" style="display:flex;gap:8px;">
+        <button class="note-btn" onclick="editDocument(${doc.id}); event.stopPropagation();" title="Modifier" style="cursor:pointer;padding:4px;background:none;border:none;">
+          <span class="material-symbols-outlined" style="font-size:20px;color:#3d57bb;">edit</span>
+        </button>
+        <button class="note-btn danger" onclick="deleteDocument(${doc.id}); event.stopPropagation();" title="Supprimer" style="cursor:pointer;padding:4px;background:none;border:none;">
+          <span class="material-symbols-outlined" style="font-size:20px;color:#f76a80;">delete</span>
+        </button>
+      </div>
+    </div>
+  </div>`;
 
 function showEmptyState(message) {
   const emptyState = document.getElementById("emptyState");

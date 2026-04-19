@@ -94,15 +94,4 @@
       </div>
     </main>
   </body>
-  <script>
-    // Protect this page - redirect to login if not authenticated
-    if (!requireAuth()) {
-      // requireAuth() will redirect
-    } else {
-      // Load earnings data when authenticated
-      initNavbar();
-      loadEarnings();
-      refreshSoldCount();
-    }
-  </script>
 </html>

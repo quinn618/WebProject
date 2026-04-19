@@ -75,6 +75,34 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
   document.body.appendChild(modal);
 
+  // Injecter le modal sold dans toutes les pages
+  const soldModal = document.createElement("div");
+  soldModal.id = "soldModal";
+  soldModal.className = "modal-overlay";
+  soldModal.style.display = "none";
+  soldModal.onclick = (e) => {
+    if (e.target === soldModal) closeSoldModal();
+  };
+  soldModal.innerHTML = `
+    <div class="modal" role="dialog" aria-modal="true" style="max-width:26rem;">
+      <div class="modal-header">
+        <h2>Log a Sale</h2>
+        <button class="modal-close" onclick="closeSoldModal()" aria-label="Close">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="color:#666;margin-bottom:1rem;">Enter the number of documents sold:</p>
+        <input id="soldPrice" class="form-input" type="number" min="1" placeholder="Number of sales" style="width:100%;padding:0.75rem;border:1px solid #ddd;border-radius:8px;font-size:1rem;font-family:inherit;" />
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeSoldModal()" style="flex:1;">Cancel</button>
+        <button class="btn-submit" onclick="logSale()" style="flex:1;background:#006b5e;color:white;border:none;padding:0.75rem;border-radius:8px;cursor:pointer;font-weight:600;">Log Sale</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(soldModal);
+
   // Init navbar et auth guard
   initNavbar();
 });

@@ -1,5 +1,3 @@
-const apiRequest = window.apiRequest;
-
 // ==================== COLOR PALETTE ====================
 const letterColors = {
   A: "#FF6B6B",
@@ -103,6 +101,32 @@ function renderGrid() {
     return;
   }
   grid.innerHTML = results.map(generateCard).join("");
+
+  // Add click handlers to cards (excluding action button clicks)
+  document.querySelectorAll(".resource-card").forEach((card) => {
+    card.addEventListener("click", function (e) {
+      // Don't trigger if clicking the action button
+      if (e.target.closest(".action-btn")) return;
+      const docId = this.getAttribute("data-id");
+      const doc = resourcesData.find((d) => d.id == docId);
+      if (doc) showDocumentDetails(doc);
+    });
+  });
+}
+
+// ==================== SHOW DOCUMENT DETAILS ====================
+function showDocumentDetails(doc) {
+  const details = `
+    <div style="font-size:0.95rem;line-height:1.6;color:var(--on-surface);">
+      <p><strong>Title:</strong> ${doc.title}</p>
+      <p><strong>Author:</strong> ${doc.author}</p>
+      <p><strong>Subject:</strong> ${doc.matiere || "N/A"}</p>
+      <p><strong>Field:</strong> ${doc.filiere || "N/A"}</p>
+      <p><strong>Type:</strong> ${doc.fileType}</p>
+      <p><strong>Price:</strong> ${doc.is_paid ? doc.price.toFixed(2) + " DT" : "Free"}</p>
+    </div>
+  `;
+  showToast(details, "info");
 }
 
 // ==================== GENERATE CARD ====================
@@ -121,7 +145,7 @@ function generateCard(r) {
     ? `<span class="price-tag">${r.price.toFixed(2)} DT</span>`
     : `<span class="price-tag free">Gratuit</span>`;
 
-  return `<div class="resource-card" data-id="${r.id}">
+  return `<div class="resource-card" data-id="${r.id}" style="cursor:pointer;transition:all 0.2s ease;">
     <div class="card-img-wrap">
       ${generateFirstLetterAvatar(r.title)}
       <span class="card-badge ${r.badgeClass}">${r.badge}</span>

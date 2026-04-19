@@ -1,5 +1,3 @@
-const apiRequest = window.apiRequest;
-
 // ==================== earnings.js ====================
 
 async function loadEarnings() {

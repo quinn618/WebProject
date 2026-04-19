@@ -1,5 +1,3 @@
-const apiRequest = window.apiRequest;
-
 // ==================== LOAD PROFILE ====================
 async function loadProfile() {
   try {
@@ -7,6 +5,8 @@ async function loadProfile() {
     // get.php returns { success:true, data: { id, name, email, ... } }
     const u = resp.data;
     if (!u) throw new Error("No profile data returned");
+
+    console.log("Profile data loaded:", u);
 
     // Hero name
     document
@@ -20,7 +20,11 @@ async function loadProfile() {
     setText("stat-docs-count", u.documents_count || 0);
     setText("stat-downloads-count", u.purchases_count || 0);
     setText("stat-aura-points", u.aura_points || 0);
-    setText("stat-earnings-amount", parseFloat(u.sold || 0).toFixed(2));
+
+    // FIXED: Ensure earnings amount is properly converted to number
+    const earningsAmount = parseFloat(u.sold) || 0;
+    console.log("Setting earnings to:", earningsAmount);
+    setText("stat-earnings-amount", earningsAmount.toFixed(2));
     setText("soldCount", u.sold_count || 0);
 
     // Pre-fill edit form
