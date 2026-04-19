@@ -1,8 +1,12 @@
 // XAMPP API Configuration (localhost:80)
-const API_BASE = "http://localhost/backend/api";
+window.API_BASE = "http://localhost/backend/api";
 
 // Utilitaire principal
-async function apiRequest(endpoint, method = "GET", body = null) {
+window.apiRequest = async function apiRequest(
+  endpoint,
+  method = "GET",
+  body = null,
+) {
   const token = localStorage.getItem("token");
   const options = {
     method,
@@ -14,7 +18,7 @@ async function apiRequest(endpoint, method = "GET", body = null) {
   if (body) options.body = JSON.stringify(body);
 
   try {
-    const res = await fetch(API_BASE + endpoint, options);
+    const res = await fetch(window.API_BASE + endpoint, options);
     const data = await res.json();
 
     if (!data.success) {
@@ -25,7 +29,11 @@ async function apiRequest(endpoint, method = "GET", body = null) {
     console.error("API Error:", error);
     throw error;
   }
-}
+};
+
+// Create local references
+const API_BASE = window.API_BASE;
+const apiRequest = window.apiRequest;
 
 // Auth
 const Auth = {

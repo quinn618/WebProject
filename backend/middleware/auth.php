@@ -1,7 +1,30 @@
 <?php
+function gc_request_headers(): array {
+    if (function_exists('getallheaders')) {
+        $h = getallheaders();
+        if (is_array($h)) {
+            return $h;
+        }
+    }
+    $out = [];
+    foreach ($_SERVER as $key => $value) {
+        if (str_starts_with($key, 'HTTP_')) {
+            $name = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($key, 5)))));
+            $out[$name] = $value;
+        }
+    }
+    if (!empty($_SERVER['HTTP_AUTHORIZATION'])) {
+        $out['Authorization'] = $_SERVER['HTTP_AUTHORIZATION'];
+    }
+    if (!empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+        $out['Authorization'] = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+    }
+    return $out;
+}
+
 function verifyToken() {
-    $headers = getallheaders();
-    $auth    = $headers['Authorization'] ?? '';
+    $headers = gc_request_headers();
+    $auth    = $headers['Authorization'] ?? ($headers['authorization'] ?? '');
 
     if (!$auth || !str_starts_with($auth, 'Bearer ')) {
         http_response_code(401);

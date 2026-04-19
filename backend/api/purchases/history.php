@@ -15,9 +15,12 @@ $stmt->execute([$userId]);
 $total = (int)($stmt->fetch()['total'] ?? 0);
 
 $stmt = $pdo->prepare(
-    'SELECT t.id, t.document_id, t.montant, t.date_transaction, d.titre, d.type_fichier '
+    'SELECT t.id, t.document_id, t.montant, t.date_transaction, d.titre, d.type_fichier, '
+  . 'f.nom AS filiere_nom, m.nom AS matiere_nom '
   . 'FROM transactions t '
   . 'JOIN documents d ON t.document_id = d.id '
+  . 'JOIN matieres m ON d.matiere_id = m.id '
+  . 'JOIN filieres f ON m.filiere_id = f.id '
   . 'WHERE t.utilisateur_id = ? AND t.type = "achat" AND t.statut = "complete" '
   . 'ORDER BY t.date_transaction DESC '
   . 'LIMIT ' . (int)$limit . ' OFFSET ' . (int)$offset
@@ -27,12 +30,17 @@ $rows = $stmt->fetchAll();
 
 $items = array_map(function ($r) {
     return [
-        'id'               => (int)$r['id'],
-        'document_id'      => (int)$r['document_id'],
-        'document_title'   => $r['titre'],
+        'id'                 => (int)$r['id'],
+        'document_id'        => (int)$r['document_id'],
+        'title'              => $r['titre'],
+        'document_title'     => $r['titre'],
+        'filiere'            => $r['filiere_nom'] ?? '',
+        'matiere'            => $r['matiere_nom'] ?? '',
+        'price'              => (float)$r['montant'],
         'document_file_type' => $r['type_fichier'] ?? null,
-        'amount_paid'      => (float)$r['montant'],
-        'purchased_at'     => $r['date_transaction'],
+        'amount_paid'        => (float)$r['montant'],
+        'created_at'         => $r['date_transaction'],
+        'purchased_at'       => $r['date_transaction'],
     ];
 }, $rows);
 

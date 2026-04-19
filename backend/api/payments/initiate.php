@@ -24,7 +24,7 @@ $stmt->execute([$userId]);
 $userRow = $stmt->fetch();
 $userBalance = (float)($userRow['solde_portefeuille'] ?? 0);
 
-$stmt = $pdo->prepare('SELECT id, prix FROM documents WHERE id = ?');
+$stmt = $pdo->prepare('SELECT id, prix, utilisateur_id FROM documents WHERE id = ?');
 $stmt->execute([$docId]);
 $doc = $stmt->fetch();
 
@@ -34,8 +34,14 @@ if (!$doc) {
 }
 
 $price = (float)($doc['prix'] ?? 0);
+$sellerId = (int)($doc['utilisateur_id'] ?? 0);
 if ($price <= 0) {
     echo json_encode(['success' => false, 'message' => 'Ce document est gratuit']);
+    exit;
+}
+
+if ($sellerId === $userId) {
+    echo json_encode(['success' => false, 'message' => 'Vous ne pouvez pas acheter votre propre document']);
     exit;
 }
 
@@ -70,6 +76,7 @@ echo json_encode([
     'data' => [
         'transaction_id' => $txnId,
         'amount' => $price,
-        'balance' => $userBalance
+        'balance' => $userBalance,
+        'payment_ref' => 'txn:' . $txnId,
     ]
 ]);

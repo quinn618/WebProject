@@ -1,54 +1,58 @@
-const API_BASE = "../backend/api";
+console.log("profile.js is loading");
 
-// ==================== API ====================
-
-async function apiRequest(endpoint, method = "GET", body = null) {
-  const token = localStorage.getItem("token");
-  const options = {
-    method,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token && { Authorization: "Bearer " + token }),
-    },
-  };
-  if (body) options.body = JSON.stringify(body);
-
-  const res = await fetch(API_BASE + endpoint, options);
-  const data = await res.json();
-  if (!data.success) throw new Error(data.error);
-  return data.data;
-}
+// Self-healing bootstrap in case api.js was not loaded.
+(function ensureApiClient() {
+  if (!window.API_BASE) window.API_BASE = "http://localhost/backend/api";
+  if (typeof window.apiRequest !== "function") {
+    window.apiRequest = async function (endpoint, method = "GET", body = null) {
+      const token = localStorage.getItem("token");
+      const options = {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: "Bearer " + token }),
+        },
+      };
+      if (body) options.body = JSON.stringify(body);
+      const res = await fetch(window.API_BASE + endpoint, options);
+      const data = await res.json();
+      if (!data.success)
+        throw new Error(data.message || data.error || "Erreur API");
+      return data.data !== undefined ? data.data : data;
+    };
+  }
+})();
+const API_BASE = window.API_BASE;
+const apiRequest = window.apiRequest;
 
 // ==================== LOAD PROFILE ====================
 
 async function loadProfile() {
   try {
     const user = await apiRequest("/profile/get.php");
+    console.log("Profile loaded:", user);
 
     // Fill in profile info
     document
       .querySelectorAll(".hero-title-row h1")
       .forEach((el) => (el.textContent = user.name));
     document
-      .querySelectorAll(".sidenav-profile h3")
-      .forEach(
-        (el) =>
-          (el.textContent = "@" + user.name.replace(/\s+/g, "_").toLowerCase()),
-      );
-    document
-      .querySelectorAll(".sidenav-profile p")
-      .forEach((el) => (el.textContent = user.filiere + " Major"));
-    document
       .querySelectorAll(".hero-desc")
       .forEach((el) => (el.textContent = user.bio || "No bio provided."));
 
     // Update stat cards from profile data
     const docsCountEl = document.getElementById("stat-docs-count");
+    const downloadsCountEl = document.getElementById("stat-downloads-count");
     const auraEl = document.getElementById("stat-aura-points");
+    const earningsAmountEl = document.getElementById("stat-earnings-amount");
     const soldEl = document.getElementById("soldCount");
 
     if (docsCountEl) docsCountEl.textContent = user.documents_count || 0;
+    if (downloadsCountEl)
+      downloadsCountEl.textContent = user.purchases_count || 0;
     if (auraEl) auraEl.textContent = user.aura_points || 0;
+    if (earningsAmountEl)
+      earningsAmountEl.textContent = parseFloat(user.sold || 0).toFixed(2);
     if (soldEl) soldEl.textContent = user.sold_count || 0;
 
     // Pre-fill edit form
@@ -460,14 +464,20 @@ function showToast(message, type) {
 
 // ==================== INIT ====================
 
-document.addEventListener("DOMContentLoaded", function () {
+function initializeProfile() {
+  console.log("Initializing profile");
+
   if (!localStorage.getItem("token")) {
+    console.log("No token found, redirecting to auth");
     window.location.href = "auth.html";
     return;
   }
 
+  console.log("Token found, calling loadProfile");
   loadProfile();
+  console.log("Calling loadPurchasesHistory");
   loadPurchasesHistory();
+  console.log("Calling loadEarningsAndDocuments");
   loadEarningsAndDocuments();
 
   const uploadForm = document.getElementById("uploadForm");
@@ -482,4 +492,12 @@ document.addEventListener("DOMContentLoaded", function () {
         uploadType.value === "paid" ? "block" : "none";
     });
   }
-});
+}
+
+// Run immediately if DOM is ready, otherwise wait for DOMContentLoaded
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeProfile);
+} else {
+  // DOM is already ready (script loaded with defer)
+  initializeProfile();
+}

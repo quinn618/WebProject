@@ -2,6 +2,27 @@
 require_once '../../config/cors.php';
 require_once '../../config/db.php';
 
+function gc_optional_user_id(): ?int {
+    $rawAuth = $_SERVER['HTTP_AUTHORIZATION'] ?? ($_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '');
+    if (!$rawAuth && function_exists('getallheaders')) {
+        $headers = getallheaders();
+        if (is_array($headers)) {
+            $rawAuth = $headers['Authorization'] ?? ($headers['authorization'] ?? '');
+        }
+    }
+
+    if (!$rawAuth || !str_starts_with($rawAuth, 'Bearer ')) {
+        return null;
+    }
+
+    $token = substr($rawAuth, 7);
+    $decoded = json_decode(base64_decode($token), true);
+    if (!$decoded || !isset($decoded['user_id']) || !isset($decoded['exp']) || $decoded['exp'] < time()) {
+        return null;
+    }
+    return (int)$decoded['user_id'];
+}
+
 function gc_base_url(): string {
     $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
     $host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
@@ -45,6 +66,7 @@ $offset  = ($page - 1) * $limit;
 
 $where  = ' WHERE d.statut = "valide"';
 $params = [];
+$requestUserId = gc_optional_user_id();
 
 // Special category: return only the authenticated user's uploads
 if (in_array(strtolower($category), ['my-notes', 'personal', 'mine'], true)) {
@@ -84,7 +106,10 @@ $total = (int)($stmt->fetch()['total'] ?? 0);
 
 // data page
 $stmt = $pdo->prepare(
-    'SELECT d.*, u.nom AS auteur_nom, m.nom AS matiere_nom, f.nom AS filiere_nom '
+    'SELECT d.*, u.nom AS auteur_nom, m.nom AS matiere_nom, f.nom AS filiere_nom, '
+  . ($requestUserId !== null
+        ? '(CASE WHEN EXISTS(SELECT 1 FROM transactions t WHERE t.utilisateur_id = ' . (int)$requestUserId . ' AND t.document_id = d.id AND t.type = "achat" AND t.statut = "complete") THEN 1 ELSE 0 END) AS is_purchased '
+        : '0 AS is_purchased ')
   . 'FROM documents d '
   . 'JOIN utilisateurs u ON d.utilisateur_id = u.id '
   . 'JOIN matieres m ON d.matiere_id = m.id '
@@ -98,15 +123,20 @@ $rows = $stmt->fetchAll();
 
 $base = gc_base_url();
 
-$items = array_map(function ($r) use ($base) {
+$items = array_map(function ($r) use ($base, $requestUserId) {
     $price = (float)($r['prix'] ?? 0);
     $path  = (string)($r['chemin_fichier'] ?? '');
     $mime  = (string)($r['type_fichier'] ?? '');
+    $docOwnerId = (int)($r['utilisateur_id'] ?? 0);
 
     $category = gc_category_from_doc($r);
     // Always use download.php endpoint to handle file access control
     $downloadUrl = $base . '/api/documents/download.php?id=' . (int)$r['id'];
     $authorHandle = '@' . (gc_slug((string)($r['auteur_nom'] ?? 'user')) ?: 'user');
+    $isPaid = $price > 0;
+    $isOwnedByRequester = $requestUserId !== null && $requestUserId === $docOwnerId;
+    $hasPurchased = (int)($r['is_purchased'] ?? 0) === 1;
+    $canDownload = !$isPaid || $isOwnedByRequester || $hasPurchased;
 
     return [
         'id'           => (int)$r['id'],
@@ -123,6 +153,11 @@ $items = array_map(function ($r) use ($base) {
         'created_at'   => $r['date_upload'],
         'filiere'      => $r['filiere_nom'] ?? '',
         'matiere'      => $r['matiere_nom'] ?? '',
+        'is_paid'      => $isPaid,
+        'owner_id'     => $docOwnerId,
+        'is_owned'     => $isOwnedByRequester,
+        'is_purchased' => $hasPurchased,
+        'can_download' => $canDownload,
     ];
 }, $rows);
 

@@ -1,24 +1,3 @@
-const API_BASE = "../backend/api";
-
-// ==================== API ====================
-
-async function apiRequest(endpoint, method = "GET", body = null) {
-  const token = localStorage.getItem("token");
-  const options = {
-    method,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token && { Authorization: "Bearer " + token }),
-    },
-  };
-  if (body) options.body = JSON.stringify(body);
-
-  const res = await fetch(API_BASE + endpoint, options);
-  const data = await res.json();
-  if (!data.success) throw new Error(data.error || data.message);
-  return data.data;
-}
-
 // ==================== LOAD EARNINGS & DOCUMENTS ====================
 
 async function loadEarnings() {

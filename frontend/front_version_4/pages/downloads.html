@@ -1,157 +1,114 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Downloads – Ghassra Core</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../assets/css/shared.css"/>
-  <link rel="stylesheet" href="../assets/css/downloads.css"/>
-  <script src="../assets/js/api.js" defer></script>
-  <script src="../assets/js/shared.js" defer></script>
-  <script src="../assets/js/downloads.js" defer></script>
-</head>
-<body>
-
-  <!-- TopNavBar -->
-  <nav class="topnav">
-    <div class="topnav-left">
-      <a class="brand" href="#">Ghassra Core</a>
-      <div class="topnav-links">
-        <a href="main.html">Resources</a>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Downloads – Ghassra Core</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/css/shared.css?v=1" />
+    <link rel="stylesheet" href="../assets/css/downloads.css?v=1" />
+    <script src="../assets/js/api.js?v=1" defer></script>
+    <script src="../assets/js/shared.js?v=1" defer></script>
+    <script src="../assets/js/downloads.js?v=1" defer></script>
+  </head>
+  <body>
+    <nav class="topnav">
+      <div class="topnav-left">
+        <a class="brand" href="main.html">Ghassra Core</a>
+        <div class="topnav-links"><a href="main.html">Resources</a></div>
       </div>
-    </div>
-    <div class="topnav-right">
-      <button class="plus-btn" aria-label="Upload new note">
-        <span class="material-symbols-outlined">add</span>
-      </button>
-      <button class="icon-btn" aria-label="Notifications">
-        <span class="material-symbols-outlined">notifications</span>
-      </button>
-      <div class="avatar-sm">
-        <img src="../assets/images/student avatar.jpg" alt="Student avatar"/>
+      <div class="topnav-right">
+        <button class="icon-btn" aria-label="Notifications">
+          <span class="material-symbols-outlined">notifications</span>
+        </button>
+        <div class="avatar-sm">
+          <img src="../assets/images/student avatar.jpg" alt="Student avatar" />
+        </div>
       </div>
-    </div>
-  </nav>
-
-  <!-- SideNavBar -->
-  <aside class="sidenav">
-    
-    <nav>
-      <a href="profile.html">
-        <span class="material-symbols-outlined">account_circle</span>
-        <span>Profile</span>
-      </a>
-      <a href="notes.html">
-        <span class="material-symbols-outlined">description</span>
-        <span>My Notes</span>
-      </a>
-      <a href="earnings.html">
-        <span class="material-symbols-outlined">payments</span>
-        <span>Earnings</span>
-      </a>
-      <a href="#" class="active">
-        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">download</span>
-        <span>Downloads</span>
-      </a>
-      <a href="#" class="logout" onclick="confirmLogout(event)">
-        <span class="material-symbols-outlined">logout</span>
-        <span>Logout</span>
-      </a>
-      
     </nav>
-    <div class="sidenav-footer">
-      <div class="sold-card" onclick="openSoldModal()">
-        <div class="sold-card-icon">
-          <span class="material-symbols-outlined">shopping_cart</span>
-        </div>
-        <h4 id="soldCount">0</h4>
-        <p>My Sold</p>
-      </div>
-      <button class="upload-btn-sidebar">Upload New Note</button>
-    </div>
-  </aside>
 
-  <!-- Main Content -->
-  <main>
-    <div class="search-bar-large">
-      <span class="material-symbols-outlined" style="color:var(--primary);font-size:1.5rem;">search</span>
-      <input id="searchInput" placeholder="Search your downloads..." type="text"/>
-    </div>
-
-    <div class="section-header">
-      <span class="material-symbols-outlined" style="color:var(--primary);">history</span>
-      <h2>Your Downloads</h2>
-      <span class="section-count">0 files</span>
-    </div>
-
-    <div class="items-list">
-      <!-- Dynamic download items will be loaded here -->
-    </div>
-  </main>
-
-</body>
-  <!-- Sold Modal -->
-  <div class="modal-overlay" id="soldModal" onclick="handleSoldOverlayClick(event)">
-    <div class="modal" role="dialog" aria-modal="true">
-      <div class="modal-header">
-        <div>
-          <h2>Add Sold Item</h2>
-          <p>Record a new successful sale.</p>
-        </div>
-        <button class="modal-close" onclick="closeSoldModal()" aria-label="Close">
-          <span class="material-symbols-outlined">close</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label class="form-label">Add Sold</label>
-          <input id="soldPrice" class="form-input" type="number" placeholder="0"/>
+    <aside class="sidenav">
+      <nav>
+        <a href="profile.html"
+          ><span class="material-symbols-outlined">account_circle</span
+          ><span>Profile</span></a
+        >
+        <a href="notes.html"
+          ><span class="material-symbols-outlined">description</span
+          ><span>My Notes</span></a
+        >
+        <a href="earnings.html"
+          ><span class="material-symbols-outlined">payments</span
+          ><span>Earnings</span></a
+        >
+        <a href="#" class="active"
+          ><span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >download</span
+          ><span>Downloads</span></a
+        >
+        <a href="#" class="logout" onclick="confirmLogout(event)"
+          ><span class="material-symbols-outlined">logout</span
+          ><span>Logout</span></a
+        >
+      </nav>
+      <div class="sidenav-footer">
+        <div class="sold-card">
+          <div class="sold-card-icon">
+            <span class="material-symbols-outlined">shopping_cart</span>
+          </div>
+          <h4 id="soldCount">0</h4>
+          <p>My Sold</p>
         </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn-cancel" onclick="closeSoldModal()">Cancel</button>
-        <button class="btn-submit" onclick="logSale()">
-          Add
-        </button>
-      </div>
-    </div>
-  </div>
+    </aside>
 
-  <!--<script>
-    function openSoldModal() {
-      document.getElementById('soldModal').classList.add('open');
+    <main>
+      <div class="search-bar-large">
+        <span
+          class="material-symbols-outlined"
+          style="color: var(--primary); font-size: 1.5rem"
+          >search</span
+        >
+        <input
+          id="searchInput"
+          placeholder="Search your downloads..."
+          type="text"
+        />
+      </div>
+      <div class="section-header">
+        <span class="material-symbols-outlined" style="color: var(--primary)"
+          >history</span
+        >
+        <h2>Your Downloads</h2>
+        <span class="section-count">0 files</span>
+      </div>
+      <div class="items-list"></div>
+    </main>
+  </body>
+  <script>
+    // Protect this page - redirect to login if not authenticated
+    if (!requireAuth()) {
+      // requireAuth() will redirect
+    } else {
+      // Load downloads data when authenticated
+      initNavbar();
+      loadDownloads();
+      refreshSoldCount();
     }
-    function closeSoldModal() {
-      document.getElementById('soldModal').classList.remove('open');
-    }
-    function handleSoldOverlayClick(e) {
-      if (e.target === document.getElementById('soldModal')) closeSoldModal();
-    }
-    function logSale() {
-      const amount = parseInt(document.getElementById('soldPrice').value);
-      if (!amount || amount < 1) {
-        showToast('Please enter a valid number.', 'warning', '#ac3149');
-        return;
-      }
-      const counter = document.getElementById('soldCount');
-      counter.textContent = parseInt(counter.textContent) + amount;
-      document.getElementById('soldPrice').value = '';
-      closeSoldModal();
-      showToast('Sale logged successfully!', 'check_circle', '#006b5e');
-    }
-    function showToast(message, icon, color) {
-      const existing = document.getElementById('gc-toast');
-      if (existing) existing.remove();
-      const toast = document.createElement('div');
-      toast.id = 'gc-toast';
-      toast.style.cssText = `position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(1rem);background:#fff;border:1px solid #e4e7ff;box-shadow:0 8px 30px rgba(39,48,87,0.15);border-radius:9999px;padding:0.75rem 1.5rem;display:flex;align-items:center;gap:0.5rem;font-weight:600;font-size:0.875rem;color:#273057;z-index:9999;opacity:0;transition:opacity 0.3s,transform 0.3s;white-space:nowrap;`;
-      toast.innerHTML = `<span class="material-symbols-outlined" style="color:${color};font-size:1.2rem;">${icon}</span>${message}`;
-      document.body.appendChild(toast);
-      requestAnimationFrame(() => { toast.style.opacity='1'; toast.style.transform='translateX(-50%) translateY(0)'; });
-      setTimeout(() => { toast.style.opacity='0'; toast.style.transform='translateX(-50%) translateY(1rem)'; setTimeout(() => toast.remove(), 400); }, 3000);
-    }
-  </script>-->
-</body>
+  </script>
 </html>

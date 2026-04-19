@@ -14,15 +14,19 @@ $userId = verifyToken();
 $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
 $isMultipart = stripos($contentType, 'multipart/form-data') !== false;
 
+$institute = '';
+
 if ($isMultipart) {
-    $name  = trim($_POST['name'] ?? '');
+    $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $sold  = isset($_POST['sold']) ? floatval($_POST['sold']) : null;
+    $institute = trim($_POST['institute_code'] ?? ($_POST['filiere'] ?? ''));
 } else {
     $data  = json_decode(file_get_contents('php://input'), true) ?: [];
     $name  = trim($data['name'] ?? '');
     $email = trim($data['email'] ?? '');
     $sold  = isset($data['sold']) ? floatval($data['sold']) : null;
+    $institute = trim($data['institute_code'] ?? ($data['filiere'] ?? ''));
 }
 
 if (!$name) {
@@ -53,6 +57,11 @@ if ($sold !== null && $sold >= 0) {
     $params[] = $sold;
 }
 
+if ($institute !== '') {
+    $updates[] = 'code_institut = ?';
+    $params[] = $institute;
+}
+
 $params[] = $userId;
 
 $stmt = $pdo->prepare('UPDATE utilisateurs SET ' . implode(', ', $updates) . ' WHERE id = ?');
@@ -71,6 +80,7 @@ echo json_encode([
         'name'           => $user['nom'] ?? $name,
         'email'          => $user['email'] ?? ($email ?: null),
         'institute_code' => $user['code_institut'] ?? null,
+        'filiere'        => $user['code_institut'] ?? null,
         'role'           => $user['role'] ?? 'etudiant',
         'sold'           => (float)($user['solde_portefeuille'] ?? 0),
         'created_at'     => $user['date_inscription'] ?? null,

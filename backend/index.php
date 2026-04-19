@@ -17,7 +17,16 @@ require_once 'middleware/auth.php';
 // Get request method and path
 $request_method = $_SERVER['REQUEST_METHOD'];
 $request_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$request_path = str_replace('/api/', '', $request_path); // Remove /api prefix
+
+// Extract everything after '/api/'
+$api_pos = strpos($request_path, '/api/');
+if ($api_pos !== false) {
+    $request_path = substr($request_path, $api_pos + 5);
+}
+// Strip optional .php extension
+$request_path = preg_replace('/\.php$/', '', $request_path);
+// Remove leading/trailing slashes
+$request_path = trim($request_path, '/');
 
 // Route the requests
 switch (true) {
@@ -48,7 +57,8 @@ switch (true) {
         require 'api/documents/list.php';
         break;
     
-    case preg_match('#^documents/detail/(\d+)$#', $request_path) && $request_method === 'GET':
+    case preg_match('#^documents/detail/(\d+)$#', $request_path, $matches) && $request_method === 'GET':
+        $_GET['id'] = $matches[1];
         require 'api/documents/detail.php';
         break;
     
@@ -56,11 +66,13 @@ switch (true) {
         require 'api/documents/upload.php';
         break;
     
-    case preg_match('#^documents/delete/(\d+)$#', $request_path) && $request_method === 'DELETE':
+    case preg_match('#^documents/delete/(\d+)$#', $request_path, $matches) && $request_method === 'DELETE':
+        $_GET['id'] = $matches[1];
         require 'api/documents/delete.php';
         break;
     
-    case preg_match('#^documents/download/(\d+)$#', $request_path) && $request_method === 'GET':
+    case preg_match('#^documents/download/(\d+)$#', $request_path, $matches) && $request_method === 'GET':
+        $_GET['id'] = $matches[1];
         require 'api/documents/download.php';
         break;
 

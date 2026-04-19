@@ -77,7 +77,7 @@
               <div class="card-header">
                 <h2 class="card-title">Welcome Back</h2>
               </div>
-              <form action="#" method="post">
+              <form action="#" method="post" novalidate>
                 <div class="field">
                   <label class="field__label" for="login-email"
                     >Email Address</label
@@ -140,8 +140,8 @@
                 </div>
                 <button
                   class="btn-submit"
-                  type="button"
-                  onclick="window.location.href = 'main.html'"
+                  type="submit"
+                  id="loginBtn"
                 >
                   Login
                   <span class="material-symbols-outlined btn-submit__icon"
@@ -174,7 +174,7 @@
                   Start your journey in the intelligent playground.
                 </p>
               </div>
-              <form action="#" method="post">
+              <form action="#" method="post" novalidate>
                 <div class="field">
                   <label class="field__label" for="signup-name"
                     >Full Name</label
@@ -273,8 +273,8 @@
                 </div>
                 <button
                   class="btn-submit"
-                  type="button"
-                  onclick="window.location.href = 'main.html'"
+                  type="submit"
+                  id="signupBtn"
                 >
                   Create my playground
                   <span class="material-symbols-outlined btn-submit__icon"

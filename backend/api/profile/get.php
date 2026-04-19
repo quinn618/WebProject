@@ -36,6 +36,8 @@ echo json_encode([
         'documents_count' => $docsCount,
         'purchases_count' => $purchasesCount,
         'aura_points'    => (int)($user['aura_points'] ?? 0),
-        'sold_count'     => (int)($user['sold_count'] ?? 0)
+        'sold_count'     => (int)($user['sold_count'] ?? 0),
+        'filiere'        => $user['code_institut'] ?? '',
+        'bio'            => ''
     ]
 ]);

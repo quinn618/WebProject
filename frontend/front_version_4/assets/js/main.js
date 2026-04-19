@@ -1,22 +1,52 @@
-const API_BASE = "../backend/api";
+// ==================== COLOR PALETTE FOR FIRST LETTERS ====================
+const letterColors = {
+  A: "#FF6B6B",
+  B: "#4ECDC4",
+  C: "#45B7D1",
+  D: "#FFA07A",
+  E: "#98D8C8",
+  F: "#F7DC6F",
+  G: "#BB8FCE",
+  H: "#85C1E2",
+  I: "#F8B88B",
+  J: "#52B788",
+  K: "#D4A5FF",
+  L: "#FF9E64",
+  M: "#9F8FEF",
+  N: "#6BCB77",
+  O: "#FF6B9D",
+  P: "#A8E6CF",
+  Q: "#FFD3B6",
+  R: "#FFAAA5",
+  S: "#FF8B94",
+  T: "#7FCDBB",
+  U: "#C5FAD5",
+  V: "#80ED99",
+  W: "#FFB703",
+  X: "#FB5607",
+  Y: "#FFBE0B",
+  Z: "#8338EC",
+};
 
-// ==================== API CALLS ====================
+function getLetterColor(letter) {
+  return letterColors[letter.toUpperCase()] || "#3d57bb";
+}
 
-async function apiRequest(endpoint, method = "GET", body = null) {
-  const token = localStorage.getItem("token");
-  const options = {
-    method,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token && { Authorization: "Bearer " + token }),
-    },
-  };
-  if (body) options.body = JSON.stringify(body);
-
-  const res = await fetch(API_BASE + endpoint, options);
-  const data = await res.json();
-  if (!data.success) throw new Error(data.error);
-  return data.data;
+function generateFirstLetterAvatar(title) {
+  const firstLetter = title.charAt(0).toUpperCase();
+  const color = getLetterColor(firstLetter);
+  return `<div style="
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: ${color};
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: white;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  ">${firstLetter}</div>`;
 }
 
 // ==================== STATE ====================
@@ -36,12 +66,14 @@ async function loadDocuments() {
 
     // Adapter le format API au format attendu par generateCard()
     resourcesData.all = docs.map(function (doc) {
+      const authorName = doc.author_name || "Unknown";
       return {
         id: doc.id,
         title: doc.title,
-        author: "@" + doc.author_name.replace(/\s+/g, "_").toLowerCase(),
+        author: "@" + authorName.replace(/\s+/g, "_").toLowerCase(),
         authorAvatar: "../assets/images/student avatar.jpg",
-        image: "../assets/images/document.jpg",
+        image: doc.title,
+        useFirstLetter: true,
         badge: doc.type === "paid" ? "Premium" : "Free",
         badgeClass: doc.type === "paid" ? "badge-teal" : "badge-blue",
         fileType: "PDF",
@@ -114,16 +146,17 @@ function generateCard(resource) {
         " DT</span>"
       : '<span class="price-tag free">Gratuit</span>';
 
+  // Generate image content - either first letter or img tag
+  const imgContent = resource.useFirstLetter
+    ? generateFirstLetterAvatar(resource.image)
+    : '<img src="' + resource.image + '" alt="' + resource.title + '"/>';
+
   return (
     '<div class="resource-card" data-id="' +
     resource.id +
     '">' +
     '<div class="card-img-wrap">' +
-    '<img src="' +
-    resource.image +
-    '" alt="' +
-    resource.title +
-    '"/>' +
+    imgContent +
     '<span class="card-badge ' +
     resource.badgeClass +
     '">' +

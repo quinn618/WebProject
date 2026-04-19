@@ -16,7 +16,11 @@ $description = trim($_POST['description'] ?? '');
 $filiere     = trim($_POST['filiere']     ?? '');
 $matiere     = trim($_POST['matiere']     ?? '');
 $category    = trim($_POST['category']    ?? 'document');
+$docType     = strtolower(trim($_POST['type'] ?? ''));
 $price       = floatval($_POST['price']   ?? 0);
+if ($docType !== 'paid') {
+    $price = 0.0;
+}
 
 if (!$title) {
     echo json_encode(['success' => false, 'message' => 'Champs obligatoires manquants']);
@@ -42,7 +46,8 @@ if ($file['size'] > 10 * 1024 * 1024) {
 }
 
 $filename = uniqid('doc_') . '.pdf';
-$uploadsDir = dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR;
+// Same folder as seeded demo PDFs: backend/uploads/
+$uploadsDir = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR;
 
 // Create uploads directory if it doesn't exist
 if (!is_dir($uploadsDir)) {

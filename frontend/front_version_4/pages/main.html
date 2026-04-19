@@ -1,191 +1,256 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ghassra Core</title>
-<!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com" rel="preconnect"/>
-  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect"/>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Ghassra Core</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
 
-  <!-- External CSS file -->
-  <link rel="stylesheet" href="../assets/css/main.css"/>
-  <link rel="icon" type="imges/png" href="../assets/images/logo.png">
-</head>
-<body>
-
-  <!-- ── HEADER ─────────────────────────────────────────── -->
-  <header class="site-header">
-    <nav class="nav-inner">
-      <div class="nav-left">
-        <span class="logo">Ghassra core</span>
-        <div class="nav-links">
-          <a href="main.html" class="nav-link active">Resources</a>
-          <a href="support.html" class="nav-link">Support</a>
-        </div>
-      </div>
-      <div class="nav-right">
-        <button class="icon-btn" aria-label="Notifications">
-          <span class="material-symbols-outlined">notifications</span>
-        </button>
-        <div class="avatar-ring">
-          <a href="profile.html"><img
-            src="..\assets\images\student avatar.jpg"
-            alt="Student profile avatar"
-          /></a>
-        </div>
-      </div>
-    </nav>
-  </header>
-
-  <!-- ── MAIN ───────────────────────────────────────────── -->
-  <main class="main-content">
-
-    <!-- HERO-->
-    <section class="hero-section">
-      <div class="hero-text">
-        <h1>Level up your <span class="accent-italic">Deep Work.</span></h1>
-        <p>The collaborative hub for CS, IoT, and Embedded Systems students. No fluff, just high-aura resources.</p>
-      </div>
-    <!--Search bar-->
-      <div class="search-wrap">
-        <div class="search-glow"></div>
-        <div class="search-bar">
-          <span class="material-symbols-outlined search-icon">search</span>
-          <input
-            type="text"
-            class="search-input"
-            placeholder="Search for C++ exams, IoT documents, or Embedded notes..."
-          />
-          <button  class="btn-find">Find</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- FILTER CHIPS -->
-    <div class="chips-row">
-      <span class="chip chip-active" data-filter="all">All Files</span>
-      <span class="chip" data-filter="exam">Exam Papers</span>
-      <span class="chip" data-filter="document">Documents</span>
-      <span class="chip" data-filter="cheat-sheet">Cheat Sheets</span>
-      <span class="chip" data-filter="code">Code</span>
-    </div>
-
-    <!-- RESOURCE CARDS GRID -->
-    <div class="cards-grid">
-      <!-- Card 1 -->
-      <div class="resource-card" data-category="code">
-        <div class="card-img-wrap">
-          <img
-            src="..\assets\images\code.jpg"
-            alt="C++ code snippets"
-          />
-          <span class="card-badge badge-teal">High Aura</span>
-        </div>
-        <h3 class="card-title">C : how to acutally use pointers</h3>
-        <div class="card-author">
-          <div class="author-avatar bg-purple">
-            <img src="..\assets\images\student avatar.jpg" alt="alex_dev"/>
+    <!-- External CSS file -->
+    <link rel="stylesheet" href="../assets/css/main.css?v=1" />
+    <link rel="icon" type="image/png" href="../assets/images/logo.png" />
+  </head>
+  <body>
+    <!-- ── HEADER ─────────────────────────────────────────── -->
+    <header class="site-header">
+      <nav class="nav-inner">
+        <div class="nav-left">
+          <span class="logo">Ghassra core</span>
+          <div class="nav-links">
+            <a href="main.html" class="nav-link active">Resources</a>
+            <a href="support.html" class="nav-link">Support</a>
           </div>
-          <span class="author-name">@alex_dev</span>
         </div>
-        <div class="card-footer">
-          <span class="file-type">.C</span>
-          <button class="action-btn" aria-label="view">
-            <span class="material-symbols-outlined">visibility</span>
+        <div class="nav-right">
+          <button class="icon-btn" aria-label="Notifications">
+            <span class="material-symbols-outlined">notifications</span>
           </button>
-        </div>
-      </div>
-
-      <!-- Card 2 -->
-      <div class="resource-card" data-category="cheat-sheet">
-        <div class="card-img-wrap">
-          <img
-            src="..\assets\images\cheat-sheet.jpg"
-            alt="cheat sheet"
-          />
-          <span class="card-badge badge-blue">Essential</span>
-        </div>
-        <h3 class="card-title">C++ Cheat Sheet</h3>
-        <div class="card-author">
-          <div class="author-avatar bg-teal">
-            <img src="..\assets\images\student avatar.jpg" alt="sarah_codes"/>
+          <div class="avatar-ring">
+            <a href="profile.html"
+              ><img
+                src="../assets/images/student avatar.jpg"
+                alt="Student profile avatar"
+            /></a>
           </div>
-          <span class="author-name">@sarah_codes</span>
         </div>
-        <div class="card-footer">
-          <span class="file-type">Image</span>
-          <button class="action-btn" aria-label="view">
-            <span class="material-symbols-outlined">visibility</span>
-          </button>
-        </div>
-      </div>
+      </nav>
+    </header>
 
-      <!-- Card 3 -->
-      <div class="resource-card" data-category="document">
-        <div class="card-img-wrap">
-          <img
-            src="..\assets\images\document.jpg"
-            alt="communication Optique/IOT"
-          />
-          <span class="card-badge badge-red">Expert</span>
+    <!-- ── MAIN ───────────────────────────────────────────── -->
+    <main class="main-content">
+      <!-- HERO-->
+      <section class="hero-section">
+        <div class="hero-text">
+          <h1>Level up your <span class="accent-italic">Deep Work.</span></h1>
+          <p>
+            The collaborative hub for CS, IoT, and Embedded Systems students. No
+            fluff, just high-aura resources.
+          </p>
         </div>
-        <h3 class="card-title">Fibre optique</h3>
-        <div class="card-author">
-          <div class="author-avatar bg-blue">
-            <img src="..\assets\images\student avatar.jpg" alt="iot_master"/>
+        <!--Search bar-->
+        <div class="search-wrap">
+          <div class="search-glow"></div>
+          <div class="search-bar">
+            <span class="material-symbols-outlined search-icon">search</span>
+            <input
+              type="text"
+              class="search-input"
+              placeholder="Search for C++ exams, IoT documents, or Embedded notes..."
+            />
+            <button class="btn-find">Find</button>
           </div>
-          <span class="author-name">@iot_master</span>
         </div>
-        <div class="card-footer">
-          <span class="file-type">Document</span>
-          <button class="action-btn" aria-label="download">
-            <span class="material-symbols-outlined">download</span>
-          </button>
-        </div>
+      </section>
+
+      <!-- FILTER CHIPS -->
+      <div class="chips-row">
+        <span class="chip chip-active" data-filter="all">All Files</span>
+        <span class="chip" data-filter="exam">Exam Papers</span>
+        <span class="chip" data-filter="document">Documents</span>
+        <span class="chip" data-filter="cheat-sheet">Cheat Sheets</span>
+        <span class="chip" data-filter="code">Code</span>
       </div>
 
-      <!-- Card 4 -->
-      <div class="resource-card" data-category="exam">
-        <div class="card-img-wrap">
-          <img
-            src="..\assets\images\exam.jpg"
-            alt="Data structures"
-          />
-          <span class="card-badge badge-teal">High Aura</span>
-        </div>
-        <h3 class="card-title">Advanced Data Structures exam</h3>
-        <div class="card-author">
-          <div class="author-avatar bg-purple">
-            <img src="..\assets\images\student avatar.jpg" alt="prof_x"/>
+      <!-- RESOURCE CARDS GRID -->
+      <div class="cards-grid">
+        <!-- Card 1 -->
+        <div class="resource-card" data-category="code">
+          <div class="card-img-wrap">
+            <div
+              style="
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #45b7d1;
+                font-size: 3.5rem;
+                font-weight: 700;
+                color: white;
+                font-family: &quot;Plus Jakarta Sans&quot;, sans-serif;
+              "
+            >
+              C
+            </div>
+            <span class="card-badge badge-teal">High Aura</span>
           </div>
-          <span class="author-name">@prof_x</span>
+          <h3 class="card-title">C : how to acutally use pointers</h3>
+          <div class="card-author">
+            <div class="author-avatar bg-purple">
+              <img src="../assets/images/student avatar.jpg" alt="alex_dev" />
+            </div>
+            <span class="author-name">@alex_dev</span>
+          </div>
+          <div class="card-footer">
+            <span class="file-type">.C</span>
+            <button class="action-btn" aria-label="view">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+          </div>
         </div>
-        <div class="card-footer">
-          <span class="file-type">PDF</span>
-          <button class="action-btn" aria-label="download">
-            <span class="material-symbols-outlined">download</span>
-          </button>
+
+        <!-- Card 2 -->
+        <div class="resource-card" data-category="cheat-sheet">
+          <div class="card-img-wrap">
+            <div
+              style="
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #45b7d1;
+                font-size: 3.5rem;
+                font-weight: 700;
+                color: white;
+                font-family: &quot;Plus Jakarta Sans&quot;, sans-serif;
+              "
+            >
+              C
+            </div>
+            <span class="card-badge badge-blue">Essential</span>
+          </div>
+          <h3 class="card-title">C++ Cheat Sheet</h3>
+          <div class="card-author">
+            <div class="author-avatar bg-teal">
+              <img
+                src="../assets/images/student avatar.jpg"
+                alt="sarah_codes"
+              />
+            </div>
+            <span class="author-name">@sarah_codes</span>
+          </div>
+          <div class="card-footer">
+            <span class="file-type">Image</span>
+            <button class="action-btn" aria-label="view">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="resource-card" data-category="document">
+          <div class="card-img-wrap">
+            <div
+              style="
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #f7dc6f;
+                font-size: 3.5rem;
+                font-weight: 700;
+                color: white;
+                font-family: &quot;Plus Jakarta Sans&quot;, sans-serif;
+              "
+            >
+              F
+            </div>
+            <span class="card-badge badge-red">Expert</span>
+          </div>
+          <h3 class="card-title">Fibre optique</h3>
+          <div class="card-author">
+            <div class="author-avatar bg-blue">
+              <img src="../assets/images/student avatar.jpg" alt="iot_master" />
+            </div>
+            <span class="author-name">@iot_master</span>
+          </div>
+          <div class="card-footer">
+            <span class="file-type">Document</span>
+            <button class="action-btn" aria-label="download">
+              <span class="material-symbols-outlined">download</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="resource-card" data-category="exam">
+          <div class="card-img-wrap">
+            <div
+              style="
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #ff6b6b;
+                font-size: 3.5rem;
+                font-weight: 700;
+                color: white;
+                font-family: &quot;Plus Jakarta Sans&quot;, sans-serif;
+              "
+            >
+              A
+            </div>
+            <span class="card-badge badge-teal">High Aura</span>
+          </div>
+          <h3 class="card-title">Advanced Data Structures exam</h3>
+          <div class="card-author">
+            <div class="author-avatar bg-purple">
+              <img src="../assets/images/student avatar.jpg" alt="prof_x" />
+            </div>
+            <span class="author-name">@prof_x</span>
+          </div>
+          <div class="card-footer">
+            <span class="file-type">PDF</span>
+            <button class="action-btn" aria-label="download">
+              <span class="material-symbols-outlined">download</span>
+            </button>
+          </div>
         </div>
       </div>
+      <!-- end .cards-grid -->
+    </main>
 
-    </div>
-    <!-- end .cards-grid -->
-
-  </main>
-
-  <!-- ── FOOTER ─────────────────────────────────────────── -->
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <span class="footer-logo">Ghassra core</span>
-        <p class="footer-copy">© 2024 GhassraCore <br>Built for students, by students.</p>
+    <!-- ── FOOTER ─────────────────────────────────────────── -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="footer-logo">Ghassra core</span>
+          <p class="footer-copy">
+            © 2024 GhassraCore <br />Built for students, by students.
+          </p>
+        </div>
       </div>
-      
-  </footer>
-  <script src="../assets/js/api.js"></script>
-  <script src="../assets/js/main.js"></script>
-</body>
+    </footer>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/main.js"></script>
+  </body>
 </html>

@@ -23,7 +23,8 @@ CREATE TABLE utilisateurs (
     
     token_reset_password VARCHAR(255) NULL,
     token_expiration DATETIME NULL,
-    
+    aura_points INT DEFAULT 0,
+    sold_count INT DEFAULT 0,
     INDEX idx_email (email),
     INDEX idx_role (role)
 ) ENGINE=InnoDB;
@@ -128,7 +129,6 @@ CREATE TABLE utilisateur_documents (
     INDEX idx_utilisateur (utilisateur_id),
     INDEX idx_document (document_id)
 ) ENGINE=InnoDB;
-les documents
 
 CREATE TABLE notations (
     id INT AUTO_INCREMENT PRIMARY KEY,

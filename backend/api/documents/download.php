@@ -27,14 +27,15 @@ function gc_user_id_or_null(): ?int {
     if ($auth && str_starts_with($auth, 'Bearer ')) {
         try {
             return gc_verify_token_from_string(substr($auth, 7));
-        } catch (_) {
+        } catch (Exception $e) {
             return null;
         }
     }
-    if (!empty($_GET['t'])) {
+    $rawToken = $_GET['t'] ?? ($_GET['token'] ?? '');
+    if ($rawToken !== '' && $rawToken !== null) {
         try {
-            return gc_verify_token_from_string((string)$_GET['t']);
-        } catch (_) {
+            return gc_verify_token_from_string((string)$rawToken);
+        } catch (Exception $e) {
             return null;
         }
     }
@@ -50,16 +51,28 @@ function gc_base_backend_url(): string {
 
 $docId = intval($_GET['id'] ?? 0);
 if (!$docId) {
+    if (($_GET['dl'] ?? '') === '1' || ($_GET['stream'] ?? '') === '1') {
+        http_response_code(400);
+        header('Content-Type: text/plain; charset=utf-8');
+        echo 'ID manquant';
+        exit;
+    }
     require_once '../../config/cors.php';
     echo json_encode(['success' => false, 'message' => 'ID manquant']);
     exit;
 }
 
-$stmt = $pdo->prepare('SELECT id, titre, chemin_fichier, prix, type_fichier FROM documents WHERE id = ?');
+$stmt = $pdo->prepare('SELECT id, titre, chemin_fichier, prix, type_fichier, utilisateur_id FROM documents WHERE id = ?');
 $stmt->execute([$docId]);
 $doc = $stmt->fetch();
 
 if (!$doc) {
+    if (($_GET['dl'] ?? '') === '1' || ($_GET['stream'] ?? '') === '1') {
+        http_response_code(404);
+        header('Content-Type: text/plain; charset=utf-8');
+        echo 'Document introuvable';
+        exit;
+    }
     require_once '../../config/cors.php';
     echo json_encode(['success' => false, 'message' => 'Document introuvable']);
     exit;
@@ -67,13 +80,66 @@ if (!$doc) {
 
 $price = (float)($doc['prix'] ?? 0);
 $isPaid = $price > 0;
+$ownerId = (int)($doc['utilisateur_id'] ?? 0);
 $fileRel = (string)($doc['chemin_fichier'] ?? '');
 
-// Resolve the file path from project root
+// Resolve path: demo PDFs and app uploads live under backend/uploads/ (see backend/uploads/*.pdf).
+// DB usually stores chemin_fichier as "uploads/filename.pdf".
 $projectRoot = dirname(dirname(dirname(__DIR__)));
-$filePath = $projectRoot . DIRECTORY_SEPARATOR . ltrim(str_replace('/', DIRECTORY_SEPARATOR, $fileRel), DIRECTORY_SEPARATOR);
+$backendRoot = dirname(__DIR__, 2); // .../backend
+$normalizedRel = ltrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $fileRel), DIRECTORY_SEPARATOR);
+$baseName = $normalizedRel !== '' ? basename($normalizedRel) : '';
 
-if (!file_exists($filePath)) {
+$candidates = [];
+if ($baseName !== '') {
+    // Prefer backend/uploads by filename (matches seeded demos and current upload target).
+    $candidates[] = $backendRoot . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . $baseName;
+}
+$candidates[] = $projectRoot . DIRECTORY_SEPARATOR . $normalizedRel;
+$candidates[] = dirname($projectRoot) . DIRECTORY_SEPARATOR . $normalizedRel;
+$candidates[] = $projectRoot . DIRECTORY_SEPARATOR . 'backend' . DIRECTORY_SEPARATOR . $normalizedRel;
+if ($baseName !== '') {
+    $candidates[] = $projectRoot . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . $baseName;
+}
+
+$filePath = null;
+foreach ($candidates as $candidate) {
+    if ($candidate && file_exists($candidate) && is_file($candidate)) {
+        $filePath = $candidate;
+        break;
+    }
+}
+
+// Last resort: scan likely uploads directories by basename only.
+if (!$filePath && $baseName !== '') {
+    $uploadDirs = [
+        $backendRoot . DIRECTORY_SEPARATOR . 'uploads',
+        $projectRoot . DIRECTORY_SEPARATOR . 'uploads',
+        $projectRoot . DIRECTORY_SEPARATOR . 'backend' . DIRECTORY_SEPARATOR . 'uploads',
+        dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'uploads',
+    ];
+    if (!empty($_SERVER['DOCUMENT_ROOT'])) {
+        $docRoot = rtrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, (string)$_SERVER['DOCUMENT_ROOT']), DIRECTORY_SEPARATOR);
+        $uploadDirs[] = $docRoot . DIRECTORY_SEPARATOR . 'ghassra' . DIRECTORY_SEPARATOR . 'backend' . DIRECTORY_SEPARATOR . 'uploads';
+        $uploadDirs[] = $docRoot . DIRECTORY_SEPARATOR . 'ghassra' . DIRECTORY_SEPARATOR . 'uploads';
+        $uploadDirs[] = $docRoot . DIRECTORY_SEPARATOR . 'uploads';
+    }
+    foreach (array_unique(array_filter($uploadDirs)) as $ud) {
+        $try = $ud . DIRECTORY_SEPARATOR . $baseName;
+        if (file_exists($try) && is_file($try)) {
+            $filePath = $try;
+            break;
+        }
+    }
+}
+
+if (!$filePath) {
+    if (($_GET['dl'] ?? '') === '1' || ($_GET['stream'] ?? '') === '1') {
+        http_response_code(404);
+        header('Content-Type: text/plain; charset=utf-8');
+        echo 'Fichier introuvable sur le serveur';
+        exit;
+    }
     require_once '../../config/cors.php';
     echo json_encode(['success' => false, 'message' => 'Fichier introuvable sur le serveur']);
     exit;
@@ -92,34 +158,51 @@ if ($wantsStream) {
             echo 'Unauthorized';
             exit;
         }
-        $stmt = $pdo->prepare('SELECT id FROM transactions WHERE utilisateur_id = ? AND document_id = ? AND type = "achat" AND statut = "complete" LIMIT 1');
-        $stmt->execute([$userId, $docId]);
-        if (!$stmt->fetch()) {
-            http_response_code(403);
-            header('Content-Type: text/plain; charset=utf-8');
-            echo 'Purchase required';
-            exit;
+        if ($userId !== $ownerId) {
+            $stmt = $pdo->prepare('SELECT id FROM transactions WHERE utilisateur_id = ? AND document_id = ? AND type = "achat" AND statut = "complete" LIMIT 1');
+            $stmt->execute([$userId, $docId]);
+            if (!$stmt->fetch()) {
+                http_response_code(403);
+                header('Content-Type: text/plain; charset=utf-8');
+                echo 'Purchase required';
+                exit;
+            }
         }
     }
 
-    // Track access
+    // Verify file exists before attempting to stream
+    if (!$filePath || !file_exists($filePath) || !is_file($filePath)) {
+        http_response_code(404);
+        header('Content-Type: text/plain; charset=utf-8');
+        echo 'Fichier non trouvé';
+        exit;
+    }
+
+    // Track access (same user/doc can download again — table has UNIQUE user+document)
     if ($userId) {
-        $stmt = $pdo->prepare('INSERT INTO utilisateur_documents (utilisateur_id, document_id, type_acces) VALUES (?, ?, "telecharge")');
+        $stmt = $pdo->prepare(
+            'INSERT INTO utilisateur_documents (utilisateur_id, document_id, type_acces) VALUES (?, ?, "telecharge") '
+          . 'ON DUPLICATE KEY UPDATE date_acces = CURRENT_TIMESTAMP'
+        );
         $stmt->execute([$userId, $docId]);
     }
 
     $safeName = preg_replace('/[^a-zA-Z0-9_\- ]+/', '', (string)($doc['titre'] ?? 'document'));
     if (!$safeName) $safeName = 'document';
     $safeName = preg_replace('/\s+/', '_', $safeName);
+    $ext = pathinfo($filePath, PATHINFO_EXTENSION) ?: 'pdf';
 
-    // Ensure headers are sent
+    // Ensure headers are sent BEFORE any output
     if (!headers_sent()) {
-        header('Content-Type: application/pdf');
-        header('Content-Disposition: attachment; filename="' . addslashes($safeName) . '.pdf"');
+        header('Content-Type: application/pdf; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $safeName . '.' . $ext . '"');
         header('Content-Length: ' . filesize($filePath));
+        header('Pragma: no-cache');
         header('Cache-Control: no-cache, no-store, must-revalidate');
+        header('Expires: 0');
     }
     
+    // Stream the file
     readfile($filePath);
     exit;
 }
@@ -134,12 +217,14 @@ if ($isPaid) {
         echo json_encode(['success' => false, 'message' => 'Authentification requise']);
         exit;
     }
-    $stmt = $pdo->prepare('SELECT id FROM transactions WHERE utilisateur_id = ? AND document_id = ? AND type = "achat" AND statut = "complete" LIMIT 1');
-    $stmt->execute([$userId, $docId]);
-    if (!$stmt->fetch()) {
-        http_response_code(403);
-        echo json_encode(['success' => false, 'message' => 'Achat requis pour télécharger ce document']);
-        exit;
+    if ($userId !== $ownerId) {
+        $stmt = $pdo->prepare('SELECT id FROM transactions WHERE utilisateur_id = ? AND document_id = ? AND type = "achat" AND statut = "complete" LIMIT 1');
+        $stmt->execute([$userId, $docId]);
+        if (!$stmt->fetch()) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Achat requis pour télécharger ce document']);
+            exit;
+        }
     }
 }
 
@@ -160,3 +245,4 @@ echo json_encode([
     'success'      => true,
     'download_url' => $url,
 ]);
+exit;
