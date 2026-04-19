@@ -1,4 +1,9 @@
 <?php
+
+require_once '../../config/cors.php';
+header('Content-Type: application/json');
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 require_once '../../config/cors.php';
 require_once '../../config/db.php';
 require_once '../../middleware/auth.php';

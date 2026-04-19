@@ -1,72 +1,80 @@
-// ==================== LOAD EARNINGS & DOCUMENTS ====================
+// ==================== earnings.js ====================
 
 async function loadEarnings() {
   try {
-    const user = await apiRequest("/profile/get.php");
-    const earnings = await apiRequest("/profile/earnings.php");
+    const [profileResp, earningsResp] = await Promise.all([
+      apiRequest("/profile/get.php"),
+      apiRequest("/profile/earnings.php"),
+    ]);
 
-    // Update sold count
-    const soldCountEl = document.getElementById("soldCount");
-    if (soldCountEl) soldCountEl.textContent = user.sold_count || 0;
+    const user = profileResp.data || {};
+    const payload = earningsResp.data || {};
+    const docs = payload.documents || [];
 
-    // Update total earnings card
-    const earningsAmountEl = document.querySelector(".balance-amount");
-    if (earningsAmountEl) {
-      earningsAmountEl.innerHTML =
-        parseFloat(earnings.total_earned || 0).toFixed(2) + " <span>TND</span>";
-    }
+    // Sidebar sold count
+    document
+      .querySelectorAll("#soldCount")
+      .forEach((el) => (el.textContent = user.sold_count || 0));
 
-    // Display earnings documents
+    // Balance card
+    const balanceEl = document.querySelector(".balance-amount");
+    if (balanceEl)
+      balanceEl.innerHTML = `${parseFloat(payload.total_earned || 0).toFixed(2)} <span>TND</span>`;
+
     const container = document.querySelector(".earnings-list");
-    if (!container) {
-      // Create container if it doesn't exist
-      const section = document.querySelector("main");
-      if (section) {
-        const div = document.createElement("div");
-        div.className = "earnings-list";
-        section.appendChild(div);
-      }
-      return;
-    }
+    if (!container) return;
 
-    if (!earnings.documents || earnings.documents.length === 0) {
+    if (docs.length === 0) {
       container.innerHTML =
-        '<p style="color:#888;text-align:center;padding:2rem;">You haven\'t uploaded any documents yet.</p>';
+        '<p style="color:#888;text-align:center;padding:2rem;">No documents uploaded yet.</p>';
       return;
     }
 
-    container.innerHTML = earnings.documents
-      .map(
-        (doc) => `
-        <div class="earnings-item">
-          <div class="earnings-info">
-            <div class="earnings-doc-icon subject-algo">
-              <span class="material-symbols-outlined">description</span>
-            </div>
-            <div class="earnings-details">
-              <h4>${doc.titre}</h4>
-              <span class="earnings-meta">Price: ${parseFloat(doc.prix).toFixed(2)} DT · Sales: ${doc.sales_count || 0}</span>
-            </div>
+    container.innerHTML = docs
+      .map((doc) => {
+        const date = new Date(doc.date_upload).toLocaleDateString("fr-FR");
+        return `<div class="earnings-item">
+        <div class="earnings-info">
+          <div class="earnings-doc-icon">
+            <span class="material-symbols-outlined">description</span>
           </div>
-          <div class="earnings-earned">
-            <span class="earnings-amount">${parseFloat(doc.total_earned || 0).toFixed(2)} DT</span>
+          <div class="earnings-details">
+            <h4>${doc.titre}</h4>
+            <span class="earnings-meta">
+              Prix: ${parseFloat(doc.prix || 0).toFixed(2)} DT ·
+              Ventes: ${doc.sales_count || 0} ·
+              Filière: ${doc.filiere_nom || ""} ·
+              Publié: ${date}
+            </span>
           </div>
         </div>
-      `,
-      )
+        <div class="earnings-earned">
+          <span class="earnings-amount">${parseFloat(doc.total_earned || 0).toFixed(2)} DT</span>
+        </div>
+      </div>`;
+      })
       .join("");
   } catch (err) {
-    console.log("Earnings error:", err.message);
+    console.error("Earnings error:", err.message);
   }
 }
 
-// ==================== INIT ====================
+// Aliases for inline scripts
+window.loadEarnings = loadEarnings;
+window.refreshSoldCount = async function () {
+  try {
+    const resp = await apiRequest("/profile/get.php");
+    const user = resp.data || {};
+    document
+      .querySelectorAll("#soldCount")
+      .forEach((el) => (el.textContent = user.sold_count || 0));
+  } catch {}
+};
 
 document.addEventListener("DOMContentLoaded", function () {
   if (!localStorage.getItem("token")) {
     window.location.href = "auth.html";
     return;
   }
-
   loadEarnings();
 });
