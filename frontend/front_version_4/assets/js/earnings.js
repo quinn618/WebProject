@@ -11,10 +11,7 @@ async function loadEarnings() {
     const payload = earningsResp.data || {};
     const docs = payload.documents || [];
 
-    // Sidebar sold count
-    document
-      .querySelectorAll("#soldCount")
-      .forEach((el) => (el.textContent = user.sold_count || 0));
+    // Sold count will be refreshed by global function - don't update here
 
     // Balance card
     const balanceEl = document.querySelector(".balance-amount");
@@ -61,20 +58,15 @@ async function loadEarnings() {
 
 // Aliases for inline scripts
 window.loadEarnings = loadEarnings;
-window.refreshSoldCount = async function () {
-  try {
-    const resp = await apiRequest("/profile/get.php");
-    const user = resp.data || {};
-    document
-      .querySelectorAll("#soldCount")
-      .forEach((el) => (el.textContent = user.sold_count || 0));
-  } catch {}
-};
 
 document.addEventListener("DOMContentLoaded", function () {
   if (!localStorage.getItem("token")) {
     window.location.href = "auth.html";
     return;
+  }
+  // Refresh sold counts to ensure they're up-to-date
+  if (window.refreshAllSoldCounts) {
+    window.refreshAllSoldCounts();
   }
   loadEarnings();
 });

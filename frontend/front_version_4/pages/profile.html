@@ -74,7 +74,7 @@
         >
       </nav>
       <div class="sidenav-footer">
-        <div class="sold-card">
+        <div class="sold-card" onclick="openSoldModal()">
           <div class="sold-card-icon">
             <span class="material-symbols-outlined">shopping_cart</span>
           </div>
@@ -145,7 +145,36 @@
 
         <div class="content-grid">
           <div>
-            <div class="section-header"><h2>My Notes Earnings</h2></div>
+            <div
+              class="section-header"
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <h2>My Notes Earnings</h2>
+              <a
+                href="notes.html"
+                class="view-all-link"
+                style="
+                  text-decoration: none;
+                  color: #006b5e;
+                  font-weight: 600;
+                  font-size: 0.875rem;
+                  display: flex;
+                  align-items: center;
+                  gap: 0.5rem;
+                "
+              >
+                View All
+                <span
+                  class="material-symbols-outlined"
+                  style="font-size: 1.2rem"
+                  >arrow_forward</span
+                >
+              </a>
+            </div>
             <div class="earnings-list"></div>
           </div>
           <aside class="sidebar">
@@ -357,8 +386,8 @@
     if (typeof window.refreshSoldCount === "undefined") {
       window.refreshSoldCount = async function () {
         try {
-          const user = await window.apiRequest("/profile/get.php");
-          const sold = user.sold_count || 0;
+          const resp = await window.apiRequest("/profile/get.php");
+          const sold = resp.data?.sold_count || 0;
           document
             .querySelectorAll("#soldCount")
             .forEach((el) => (el.textContent = sold));
@@ -390,7 +419,10 @@
         loadProfile();
         loadPurchasesHistory();
         initNavbar();
-        refreshSoldCount();
+        // Use global refresh function for sold count
+        if (typeof window.refreshAllSoldCounts === "function") {
+          window.refreshAllSoldCounts();
+        }
       });
     }
   </script>

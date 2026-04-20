@@ -10,10 +10,7 @@ async function loadPurchases() {
     const user = profileResp.data || {};
     const purchases = purchasesResp.data || [];
 
-    // Update sold count in sidebar
-    document
-      .querySelectorAll("#soldCount")
-      .forEach((el) => (el.textContent = user.sold_count || 0));
+    // Sold count will be refreshed by global function - don't update here
 
     // Update section count
     const countEl = document.querySelector(".section-count");
@@ -67,15 +64,6 @@ async function loadPurchases() {
 
 // Aliases used by inline scripts in HTML pages
 window.loadDownloads = loadPurchases;
-window.refreshSoldCount = async function () {
-  try {
-    const resp = await apiRequest("/profile/get.php");
-    const user = resp.data || {};
-    document
-      .querySelectorAll("#soldCount")
-      .forEach((el) => (el.textContent = user.sold_count || 0));
-  } catch {}
-};
 
 function setupSearch() {
   const input = document.getElementById("searchInput");
@@ -93,6 +81,10 @@ document.addEventListener("DOMContentLoaded", function () {
   if (!localStorage.getItem("token")) {
     window.location.href = "auth.html";
     return;
+  }
+  // Refresh sold counts to ensure they're up-to-date
+  if (window.refreshAllSoldCounts) {
+    window.refreshAllSoldCounts();
   }
   loadPurchases();
   setupSearch();

@@ -48,24 +48,46 @@ function generateFirstLetterAvatar(title) {
 
 async function loadMyDocuments() {
   try {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    if (!user.id) return;
-
-    const resp = await apiRequest("/documents/list.php?user_id=" + user.id);
+    console.log("Loading my documents...");
+    // Use category=my-notes to get only the current user's documents
+    const resp = await apiRequest("/documents/list.php?category=my-notes");
+    console.log("API response:", resp);
     allDocuments = resp.data || [];
+    console.log("Documents loaded:", allDocuments);
+
+    if (!allDocuments || allDocuments.length === 0) {
+      console.log("No documents found");
+      renderNotes();
+      return;
+    }
+
     renderNotes();
   } catch (err) {
     console.error("Erreur chargement documents :", err.message);
+    console.error("Full error:", err);
     showEmptyState("Erreur de chargement. Réessayez plus tard.");
   }
 }
+
+// Function to refresh documents (called after upload)
+window.refreshNotesList = async function () {
+  await loadMyDocuments();
+};
 
 // ==================== RENDER ====================
 
 function renderNotes() {
   const container = document.querySelector(".cards-grid");
   const emptyState = document.getElementById("emptyState");
-  if (!container) return;
+
+  console.log("renderNotes called");
+  console.log("Container found:", container ? "YES" : "NO");
+  console.log("All documents:", allDocuments);
+
+  if (!container) {
+    console.error("Container .cards-grid not found!");
+    return;
+  }
 
   let results = allDocuments;
 
@@ -79,15 +101,25 @@ function renderNotes() {
     });
   }
 
+  console.log("Results to display:", results.length);
+
   if (results.length === 0) {
+    console.log("No results, showing empty state");
     container.innerHTML = "";
-    if (emptyState) emptyState.style.display = "block";
+    if (emptyState) {
+      emptyState.style.display = "block";
+    }
     return;
   }
 
+  console.log("Rendering", results.length, "cards");
   if (emptyState) emptyState.style.display = "none";
-  container.innerHTML = results.map(generateNoteCard).join("");
-  
+
+  const cardsHTML = results.map(generateNoteCard).join("");
+  console.log("Generated HTML:", cardsHTML.substring(0, 200) + "...");
+
+  container.innerHTML = cardsHTML;
+
   // Add click handlers to cards (excluding action buttons)
   document.querySelectorAll(".note-card").forEach((card) => {
     card.addEventListener("click", function (e) {
@@ -112,7 +144,6 @@ function showDocumentDetails(doc) {
 
 // ==================== GENERATE CARD ====================
 function generateNoteCard(doc) {
-  const author = doc.author || "@unknown";
   const fileType = doc.file_type || "PDF";
   const badgeClass = doc.is_paid ? "badge-teal" : "badge-blue";
   const badge = doc.is_paid ? "Paid" : "Free";
@@ -122,31 +153,26 @@ function generateNoteCard(doc) {
     ? `<span class="price-tag">${price.toFixed(2)} DT</span>`
     : `<span class="price-tag free">Gratuit</span>`;
 
-  return `<div class="resource-card note-card" data-id="${doc.id}" style="cursor:pointer;transition:all 0.2s ease;">
+  return `<div class="resource-card note-card" data-id="${doc.id}" style="cursor:pointer;">
     <div class="card-img-wrap">
       ${generateFirstLetterAvatar(doc.title)}
       <span class="card-badge ${badgeClass}">${badge}</span>
     </div>
     <h3 class="card-title">${doc.title}</h3>
-    <div class="card-author">
-      <div class="author-avatar bg-purple">
-        <img src="../assets/images/student avatar.jpg" alt="${author}"/>
-      </div>
-      <span class="author-name">${author}</span>
-    </div>
     <div class="card-footer">
       <span class="file-type">${fileType}</span>
       ${priceTag}
-      <div class="note-actions" style="display:flex;gap:8px;">
-        <button class="note-btn" onclick="editDocument(${doc.id}); event.stopPropagation();" title="Modifier" style="cursor:pointer;padding:4px;background:none;border:none;">
-          <span class="material-symbols-outlined" style="font-size:20px;color:#3d57bb;">edit</span>
+      <div class="note-actions" style="display:flex;gap:6px;margin-left:auto;">
+        <button class="note-btn" onclick="editDocument(${doc.id}); event.stopPropagation();" title="Edit" style="background:none;border:none;cursor:pointer;padding:4px;color:#3d57bb;display:flex;align-items:center;transition:all 0.2s;">
+          <span class="material-symbols-outlined" style="font-size:18px;">edit</span>
         </button>
-        <button class="note-btn danger" onclick="deleteDocument(${doc.id}); event.stopPropagation();" title="Supprimer" style="cursor:pointer;padding:4px;background:none;border:none;">
-          <span class="material-symbols-outlined" style="font-size:20px;color:#f76a80;">delete</span>
+        <button class="note-btn danger" onclick="deleteDocument(${doc.id}); event.stopPropagation();" title="Delete" style="background:none;border:none;cursor:pointer;padding:4px;color:#f76a80;display:flex;align-items:center;transition:all 0.2s;">
+          <span class="material-symbols-outlined" style="font-size:18px;">delete</span>
         </button>
       </div>
     </div>
   </div>`;
+}
 
 function showEmptyState(message) {
   const emptyState = document.getElementById("emptyState");
@@ -259,6 +285,14 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
+  console.log("My Notes page loading...");
+
+  // Load documents and initialize search
   loadMyDocuments();
   initSearch();
+
+  // Refresh sold count from shared.js if available
+  if (typeof window.refreshAllSoldCounts === "function") {
+    window.refreshAllSoldCounts();
+  }
 });

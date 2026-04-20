@@ -86,25 +86,31 @@ document.addEventListener("DOMContentLoaded", () => {
   soldModal.innerHTML = `
     <div class="modal" role="dialog" aria-modal="true" style="max-width:26rem;">
       <div class="modal-header">
-        <h2>Log a Sale</h2>
+        <h2>My Sold Count</h2>
         <button class="modal-close" onclick="closeSoldModal()" aria-label="Close">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
       <div class="modal-body">
-        <p style="color:#666;margin-bottom:1rem;">Enter the number of documents sold:</p>
-        <input id="soldPrice" class="form-input" type="number" min="1" placeholder="Number of sales" style="width:100%;padding:0.75rem;border:1px solid #ddd;border-radius:8px;font-size:1rem;font-family:inherit;" />
+        <div style="text-align:center;padding:2rem;background:#f5f7ff;border-radius:12px;margin-bottom:1.5rem;">
+          <p style="color:#888;font-size:0.875rem;margin-bottom:0.5rem;">Your Current Sold Count</p>
+          <h3 style="color:#006b5e;font-size:2.5rem;margin:0;font-weight:700;" id="currentSoldDisplay">0</h3>
+          <p style="color:#888;font-size:0.875rem;margin-top:0.5rem;">Documents Sold</p>
+        </div>
+        <p style="color:#666;margin-bottom:1rem;">Log a new sale:</p>
+        <input id="soldPrice" class="form-input" type="number" min="1" placeholder="Number of documents to add" style="width:100%;padding:0.75rem;border:1px solid #ddd;border-radius:8px;font-size:1rem;font-family:inherit;" />
       </div>
       <div class="modal-footer">
-        <button class="btn-cancel" onclick="closeSoldModal()" style="flex:1;">Cancel</button>
-        <button class="btn-submit" onclick="logSale()" style="flex:1;background:#006b5e;color:white;border:none;padding:0.75rem;border-radius:8px;cursor:pointer;font-weight:600;">Log Sale</button>
+        <button class="btn-cancel" onclick="closeSoldModal()" style="flex:1;">Close</button>
+        <button class="btn-submit" onclick="logSale()" style="flex:1;background:#006b5e;color:white;border:none;padding:0.75rem;border-radius:8px;cursor:pointer;font-weight:600;">Add Sale</button>
       </div>
     </div>
   `;
   document.body.appendChild(soldModal);
 
-  // Init navbar et auth guard
+  // Init navbar, auth guard, and refresh sold counts
   initNavbar();
+  window.refreshAllSoldCounts();
 });
 
 function confirmLogout(e) {
@@ -129,11 +135,56 @@ function doLogout() {
 // ==================== SOLD MODAL ====================
 
 function openSoldModal() {
-  document.getElementById("soldModal").classList.add("open");
+  const modal = document.getElementById("soldModal");
+  if (modal) {
+    modal.style.display = "flex";
+    setTimeout(() => modal.classList.add("open"), 10);
+
+    // Fetch and display the real sold count from the database
+    fetchAndDisplaySoldCount();
+  }
 }
 
+async function fetchAndDisplaySoldCount() {
+  try {
+    const resp = await window.apiRequest("/profile/get.php");
+    const soldCount = resp.data?.sold_count || 0;
+    const displayEl = document.getElementById("currentSoldDisplay");
+    if (displayEl) {
+      displayEl.textContent = soldCount;
+    }
+  } catch (err) {
+    console.error("Error fetching sold count:", err.message);
+  }
+}
+
+// Global function to sync sold count across all pages
+window.refreshAllSoldCounts = async function () {
+  try {
+    const resp = await window.apiRequest("/profile/get.php");
+    const soldCount = resp.data?.sold_count || 0;
+
+    // Update all #soldCount elements across ALL pages
+    document.querySelectorAll("#soldCount").forEach((el) => {
+      el.textContent = soldCount;
+    });
+
+    // Update the modal display if it exists
+    const displayEl = document.getElementById("currentSoldDisplay");
+    if (displayEl) {
+      displayEl.textContent = soldCount;
+    }
+  } catch (err) {
+    console.error("Error refreshing sold counts:", err.message);
+  }
+};
+
 function closeSoldModal() {
-  document.getElementById("soldModal").classList.remove("open");
+  const modal = document.getElementById("soldModal");
+  if (modal) {
+    modal.classList.remove("open");
+    setTimeout(() => (modal.style.display = "none"), 300);
+  }
 }
 
 function handleSoldOverlayClick(e) {
@@ -148,13 +199,39 @@ async function logSale() {
   }
 
   try {
-    // Mettre à jour le compteur affiché
-    const counter = document.getElementById("soldCount");
-    if (counter) counter.textContent = parseInt(counter.textContent) + amount;
+    // POST the new sale amount to the backend
+    const resp = await window.apiRequest("/profile/add-sold.php", "POST", {
+      amount,
+    });
+
+    if (!resp.success) {
+      showToast(
+        "Error: " + (resp.message || "Unknown error"),
+        "error",
+        "#ac3149",
+      );
+      return;
+    }
+
+    const newSoldCount = resp.data?.sold_count || 0;
+
+    // Update ALL sold count displays across ALL pages
+    document.querySelectorAll("#soldCount").forEach((el) => {
+      el.textContent = newSoldCount;
+    });
+
+    // Also update the modal display with the fresh value
+    const displayEl = document.getElementById("currentSoldDisplay");
+    if (displayEl) {
+      displayEl.textContent = newSoldCount;
+    }
 
     document.getElementById("soldPrice").value = "";
-    closeSoldModal();
-    showToast("Sale logged successfully!", "check_circle", "#006b5e");
+    showToast(
+      "Sale logged successfully! Your sold count is now " + newSoldCount,
+      "check_circle",
+      "#006b5e",
+    );
   } catch (err) {
     showToast("Erreur : " + err.message, "error", "#ac3149");
   }

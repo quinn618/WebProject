@@ -25,7 +25,11 @@ async function loadProfile() {
     const earningsAmount = parseFloat(u.sold) || 0;
     console.log("Setting earnings to:", earningsAmount);
     setText("stat-earnings-amount", earningsAmount.toFixed(2));
-    setText("soldCount", u.sold_count || 0);
+
+    // Refresh all sold counts across all pages (global function)
+    if (window.refreshAllSoldCounts) {
+      window.refreshAllSoldCounts();
+    }
 
     // Pre-fill edit form
     setVal("editName", u.name || "");
@@ -236,6 +240,10 @@ async function handleUpload(e) {
     // Refresh earnings and profile stats
     loadEarningsAndDocuments();
     loadProfile();
+    // Refresh notes list if it's open
+    if (window.refreshNotesList) {
+      window.refreshNotesList();
+    }
   } catch (err) {
     showToast("Erreur upload : " + err.message, "error");
   } finally {
