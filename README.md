@@ -408,6 +408,11 @@ Ghassra/
 - **Issues:** Create an issue on GitHub
 - **Contributions:** Fork and submit pull requests
 
+## 📊 Project Presentation
+
+You can explore the full presentation of *Ghassra Core* here:  
+👉 [https://www.canva.com/https://canva.link/u07klq2wjmffqje]
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
