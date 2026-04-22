@@ -411,7 +411,7 @@ Ghassra/
 ## 📊 Project Presentation
 
 You can explore the full presentation of *Ghassra Core* here:  
-👉 [https://www.canva.com/https://canva.link/u07klq2wjmffqje]
+👉[ [https://www.canva.com/https://canva.link/u07klq2wjmffqje]](https://canva.link/u07klq2wjmffqje)
 
 ## License
 
